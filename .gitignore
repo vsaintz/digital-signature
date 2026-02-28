@@ -1,25 +1,23 @@
-# Compiled output
+# Python & Django
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv/
+venv/
+ENV/
+db.sqlite3
+/media/
+/static/
+
+# Node / Angular
+node_modules/
 /dist
 /tmp
 /out-tsc
-
-# Node
-/node_modules
+.angular/
 npm-debug.log
 yarn-error.log
-
-# IDEs and editors
-.idea/
-.vscode/
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.history/
-*.sublime-workspace
-
-# Angular & Tools
-.angular/
 /coverage
 /typings
 __screenshots__/
@@ -27,3 +25,6 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+*.log
+staticfiles/
