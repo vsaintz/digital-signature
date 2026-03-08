@@ -36,3 +36,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             str(p) for p in [self.first_name, self.middle_name, self.last_name] if p
         ]
         return " ".join(parts)
+
+    class Meta:
+        verbose_name = "user"
+        verbose_name_plural = "users"

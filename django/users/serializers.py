@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
 
 User = get_user_model()
 
@@ -36,3 +38,31 @@ class UserSerializer(serializers.ModelSerializer):
             "phone_number",
             "full_name",
         ]
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        email = attrs.get("email", "")
+        password = attrs.get("password", "")
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError(
+                "Invalid email or password. Please try again."
+            )
+
+        if not user.check_password(password):
+            raise serializers.ValidationError(
+                "Invalid email or password. Please try again."
+            )
+
+        if not user.is_active:
+            raise serializers.ValidationError("This account has been deactivated.")
+
+        refresh = RefreshToken.for_user(user)
+
+        return {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        }
