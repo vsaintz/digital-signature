@@ -112,7 +112,7 @@ class DocumentSerializer(serializers.ModelSerializer):
 class DocumentUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
-        fields = ["name", "signing_status"]
+        fields = ["name"]
 
     def validate_name(self, value: str) -> str:
         return value.strip()
