@@ -1,9 +1,8 @@
 import { Component } from "@angular/core"
 
 @Component({
-    selector: 'app-navigation',
-    imports: [],
-    template: ` `
+  selector: "app-navigation",
+  imports: [],
+  template: ``,
 })
-
-export class NavigationComponent { }
+export class NavigationComponent {}
