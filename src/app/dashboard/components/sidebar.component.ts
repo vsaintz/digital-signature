@@ -1,6 +1,7 @@
 import { Component } from "@angular/core"
-import { RouterLink, RouterLinkActive } from "@angular/router"
+import { Router, RouterLink, RouterLinkActive } from "@angular/router"
 
+import { AuthService } from "@services/auth.service"
 import { UserProfileComponent } from "@dashboard/components/user-profile.component"
 import { AppIconName } from "@shared/icons/icons"
 import { IconComponent } from "@shared/icons/icons.component"
@@ -118,9 +119,17 @@ export class SidebarComponent {
     },
   ]
 
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
+
   toggleGroup(group: NavGroup) {
     group.isExpanded = !group.isExpanded
   }
 
-  handleSignOut() {}
+  handleSignOut() {
+    this.authService.signout()
+    this.router.navigate(["/auth/signin"])
+  }
 }
