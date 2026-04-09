@@ -1,4 +1,6 @@
 import { Routes } from "@angular/router"
+import { SigninComponent } from "@auth/signin/signin.component"
+import { SignupComponent } from "@auth/signup/signup.component"
 import { LandingComponent } from "@landing/landing.component"
 import { DashboardComponent } from "@dashboard/dashboard.component"
 
@@ -15,6 +17,13 @@ export const routes: Routes = [
     path: "",
     redirectTo: "/landing",
     pathMatch: "full",
+  },
+  {
+    path: "auth",
+    children: [
+      { path: "signin", component: SigninComponent },
+      { path: "signup", component: SignupComponent },
+    ],
   },
   {
     path: "landing",

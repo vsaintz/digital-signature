@@ -29,3 +29,7 @@ Thumbs.db
 *.log
 staticfiles/
 /django/media/
+
+# Extras
+src/environments/environment.ts
+src/environments/environment.prod.ts
