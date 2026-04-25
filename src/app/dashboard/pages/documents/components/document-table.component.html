@@ -1,0 +1,132 @@
+<div class="rounded-xl border border-border overflow-hidden bg-background-subtle">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="border-b border-border bg-background">
+        <th class="px-4 py-3 w-10">
+          <input
+            type="checkbox"
+            [checked]="isAllSelected"
+            [indeterminate]="isIndeterminate"
+            (change)="toggleAll.emit()"
+            class="w-4 h-4 rounded border border-border cursor-pointer"
+          />
+        </th>
+        <th class="text-left px-5 py-3 text-xs font-medium text-foreground-muted tracking-wider">
+          Name
+        </th>
+        <th class="text-left px-5 py-3 text-xs font-medium text-foreground-muted tracking-wider">
+          Type
+        </th>
+        <th class="text-left px-5 py-3 text-xs font-medium text-foreground-muted tracking-wider">
+          Size
+        </th>
+        <th class="text-left px-5 py-3 text-xs font-medium text-foreground-muted tracking-wider">
+          Status
+        </th>
+        <th class="text-left px-5 py-3 text-xs font-medium text-foreground-muted tracking-wider">
+          Signing
+        </th>
+        <th class="px-5 py-3 w-24"></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (doc of documents; track doc.id; let last = $last) {
+        <tr
+          class="transition-colors duration-100 hover:bg-hover-background"
+          [class.border-b]="!last"
+          [class.border-border]="!last"
+          [class.bg-hover-background]="selectedIds.has(doc.id)"
+        >
+          <td class="px-4 py-3 w-10">
+            <input
+              type="checkbox"
+              [checked]="selectedIds.has(doc.id)"
+              (change)="toggleOne.emit(doc.id)"
+              class="w-4 h-4 rounded border border-border cursor-pointer"
+            />
+          </td>
+          <td class="px-5 py-3">
+            <div class="flex items-center gap-3">
+              <app-icon [name]="'FileArchive'" />
+              <div>
+                <p class="font-medium text-sm text-foreground truncate max-w-55 capitalize">
+                  {{ doc.name }}
+                </p>
+                <p class="text-xs text-foreground-muted mt-0.5">
+                  Created {{ doc.created_at | date: 'MMM d, y · h:mm a' }}
+                </p>
+              </div>
+            </div>
+          </td>
+          <td class="px-5 py-3">
+            <span
+              class="inline-flex items-center px-2 py-0.5 text-sm font-medium text-foreground-muted"
+            >
+              .{{ doc.file_type }}
+            </span>
+          </td>
+          <td class="px-5 py-3 text-sm text-foreground-muted">{{ doc.file_size_display }}</td>
+          <td class="px-5 py-3">
+            <span
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs capitalize"
+              [ngClass]="{
+                'bg-success-bg text-success-text border border-success-border':
+                  doc.processing_status === 'ready',
+                'bg-error-bg text-error-text border border-error-border':
+                  doc.processing_status === 'error',
+                'bg-background text-foreground-muted border border-border':
+                  doc.processing_status !== 'ready' && doc.processing_status !== 'error',
+              }"
+            >
+              <span
+                class="w-1.5 h-1.5 rounded-full"
+                [ngClass]="{
+                  'bg-success-text': doc.processing_status === 'ready',
+                  'bg-error-text': doc.processing_status === 'error',
+                  'bg-foreground-muted':
+                    doc.processing_status !== 'ready' && doc.processing_status !== 'error',
+                }"
+              ></span>
+              {{ doc.processing_status }}
+            </span>
+          </td>
+          <td class="px-5 py-3 text-foreground-muted text-sm capitalize">
+            {{ doc.signing_status }}
+          </td>
+          <td class="px-5 py-3">
+            <div class="flex items-center gap-3 justify-end">
+              <button
+                class="px-2.5 py-1.5 text-xs font-bold rounded-md border border-border text-foreground bg-background-subtle cursor-pointer"
+              >
+                View
+              </button>
+              <button
+                class="flex items-center justify-center w-7 h-7 rounded-md hover:border border-border text-foreground bg-background-subtle cursor-pointer"
+              >
+                <app-icon [name]="'Ellipsis'" [size]="14" />
+              </button>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <div class="flex justify-between px-5 py-5 border-t border-border bg-background-subtle">
+    <span class="px-2 py-1 text-xs font-medium rounded-md border border-border capitalize">
+      {{ documents.length }} {{ documents.length === 1 ? 'document' : 'documents' }}
+    </span>
+    <div class="flex gap-3">
+      <span
+        class="flex gap-1 items-center px-2 py-1 text-xs font-medium rounded-md border border-border"
+      >
+        <app-icon [name]="'ChevronLeft'" [size]="14" /> Previous
+      </span>
+      <span
+        class="flex gap-1 items-center px-2 py-1 text-xs font-medium rounded-md border border-border"
+      >
+        Next <app-icon [name]="'ChevronRight'" [size]="14" />
+      </span>
+    </div>
+  </div>
+</div>
