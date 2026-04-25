@@ -15,7 +15,7 @@ export class IconComponent {
   name = input.required<AppIconName>()
   size = input<number>(20)
   color = input<string>("currentColor")
-  stroke = input<number>(2)
+  stroke = input<number>(2.1)
 
   get iconData() {
     return APP_ICONS[this.name()]

@@ -1,0 +1,43 @@
+@if (showUploadModal()) {
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+  (click)="showUploadModal.set(false)"
+>
+  <div
+    class="bg-background border border-border rounded-xl w-full max-w-3xl p-10 mx-4"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-sm font-semibold text-foreground">Upload Document</h2>
+      <button (click)="showUploadModal.set(false)" class="text-foreground-muted cursor-pointer">
+        <app-icon name="X" [size]="18" />
+      </button>
+    </div>
+    <dash-file-upload (uploadSuccess)="onUploadSuccess()" />
+  </div>
+</div>
+}
+
+<div class="w-full h-svg">
+  <div class="flex justify-between items-center mb-7 px-5 pt-5">
+    <h1 class="flex items-center text-sm font-medium text-foreground-muted">
+      Documents
+      <app-icon [name]="'ChevronRight'" [size]="14" class="mx-1" />
+      <span class="text-foreground tracking-tight">My Documents</span>
+    </h1>
+    <div class="flex gap-3">
+      <button
+        class="flex gap-1 items-center border border-border px-2 py-1 text-sm font-medium rounded-md"
+      >
+        Export <app-icon [name]="'ChevronDown'" [size]="14" />
+      </button>
+      <button
+        (click)="showUploadModal.set(true)"
+        class="flex gap-1 items-center px-2 py-1 text-sm font-medium rounded-md theme-inverse bg-(--background) text-(--foreground)"
+      >
+        <app-icon [name]="'Plus'" [size]="14" /> New Document
+      </button>
+    </div>
+  </div>
+  <list-document />
+</div>
