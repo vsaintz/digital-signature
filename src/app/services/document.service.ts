@@ -8,6 +8,7 @@ export interface Document {
   id: string
   name: string
   owner_email: string
+  file_size: number
   file_size_display: string
   file_type: string
   processing_status: string

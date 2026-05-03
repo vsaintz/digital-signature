@@ -1,132 +1,225 @@
-<div class="rounded-xl border border-border overflow-hidden bg-background-subtle">
-  <table class="w-full text-sm">
+<div class="hidden md:block rounded-xl border border-border overflow-hidden bg-background">
+  <table class="w-full">
     <thead>
-      <tr class="border-b border-border bg-background">
+      <tr class="border-b border-border">
         <th class="px-4 py-3 w-10">
           <input
             type="checkbox"
             [checked]="isAllSelected"
             [indeterminate]="isIndeterminate"
             (change)="toggleAll.emit()"
-            class="w-4 h-4 rounded border border-border cursor-pointer"
+            class="w-4 h-4 rounded border border-border cursor-pointer accent-accent"
           />
         </th>
-        <th class="text-left px-5 py-3 text-xs font-medium text-foreground-muted tracking-wider">
+        <th
+          class="text-left px-4 py-3 text-[10.5px] font-medium uppercase tracking-[0.08em] text-foreground-muted"
+        >
           Name
         </th>
-        <th class="text-left px-5 py-3 text-xs font-medium text-foreground-muted tracking-wider">
+        <th
+          class="text-left px-4 py-3 text-[10.5px] font-medium uppercase tracking-[0.08em] text-foreground-muted hidden lg:table-cell"
+        >
           Type
         </th>
-        <th class="text-left px-5 py-3 text-xs font-medium text-foreground-muted tracking-wider">
+        <th
+          class="text-left px-4 py-3 text-[10.5px] font-medium uppercase tracking-[0.08em] text-foreground-muted hidden xl:table-cell"
+        >
           Size
         </th>
-        <th class="text-left px-5 py-3 text-xs font-medium text-foreground-muted tracking-wider">
+        <th
+          class="text-left px-4 py-3 text-[10.5px] font-medium uppercase tracking-[0.08em] text-foreground-muted"
+        >
           Status
         </th>
-        <th class="text-left px-5 py-3 text-xs font-medium text-foreground-muted tracking-wider">
+        <th
+          class="text-left px-4 py-3 text-[10.5px] font-medium uppercase tracking-[0.08em] text-foreground-muted hidden lg:table-cell"
+        >
           Signing
         </th>
-        <th class="px-5 py-3 w-24"></th>
+        <th class="px-4 py-3 w-28"></th>
       </tr>
     </thead>
-    <tbody>
-      @for (doc of documents; track doc.id; let last = $last) {
+
+    <tbody class="divide-y divide-[oklch(0.965_0.003_95)]">
+      @for (doc of documents; track doc.id) {
         <tr
-          class="transition-colors duration-100 hover:bg-hover-background"
-          [class.border-b]="!last"
-          [class.border-border]="!last"
-          [class.bg-hover-background]="selectedIds.has(doc.id)"
+          class="group transition-colors hover:bg-background-subtle
+                 {{ selectedIds.has(doc.id) ? 'bg-[oklch(0.96_0.03_240)]' : '' }}"
         >
-          <td class="px-4 py-3 w-10">
+          <td class="px-4 py-3.5 w-10">
             <input
               type="checkbox"
               [checked]="selectedIds.has(doc.id)"
               (change)="toggleOne.emit(doc.id)"
-              class="w-4 h-4 rounded border border-border cursor-pointer"
+              class="w-4 h-4 rounded border border-border cursor-pointer accent-accent"
             />
           </td>
-          <td class="px-5 py-3">
+
+          <td class="px-4 py-3.5">
             <div class="flex items-center gap-3">
-              <app-icon [name]="'FileArchive'" />
+              <div
+                class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0
+                          {{ fileTypeBg(doc.file_type) }}"
+              >
+                <app-icon name="FileSpreadsheet" [size]="15" />
+              </div>
               <div>
-                <p class="font-medium text-sm text-foreground truncate max-w-55 capitalize">
+                <p class="text-sm font-medium text-foreground truncate capitalize">
                   {{ doc.name }}
                 </p>
-                <p class="text-xs text-foreground-muted mt-0.5">
-                  Created {{ doc.created_at | date: 'MMM d, y · h:mm a' }}
+                <p class="text-[11.5px] font-light text-foreground-muted mt-0.5">
+                  {{ doc.created_at | date: 'MMM d, y · h:mm a' }}
                 </p>
               </div>
             </div>
           </td>
-          <td class="px-5 py-3">
+
+          <td class="px-4 py-3.5">
             <span
-              class="inline-flex items-center px-2 py-0.5 text-sm font-medium text-foreground-muted"
+              class="inline-flex items-center px-2 py-0.5 rounded-md text-[13px] font-medium text-foreground-muted"
             >
               .{{ doc.file_type }}
             </span>
           </td>
-          <td class="px-5 py-3 text-sm text-foreground-muted">{{ doc.file_size_display }}</td>
-          <td class="px-5 py-3">
+
+          <td class="px-4 py-3.5 hidden xl:table-cell">
+            <span class="text-[13px] font-light text-foreground-muted">
+              {{ doc.file_size_display }}
+            </span>
+          </td>
+
+          <td class="px-4 py-3.5">
             <span
-              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs capitalize"
-              [ngClass]="{
-                'bg-success-bg text-success-text border border-success-border':
-                  doc.processing_status === 'ready',
-                'bg-error-bg text-error-text border border-error-border':
-                  doc.processing_status === 'error',
-                'bg-background text-foreground-muted border border-border':
-                  doc.processing_status !== 'ready' && doc.processing_status !== 'error',
-              }"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11.5px]
+                         font-medium capitalize {{ statusBg(doc.processing_status) }}"
             >
-              <span
-                class="w-1.5 h-1.5 rounded-full"
-                [ngClass]="{
-                  'bg-success-text': doc.processing_status === 'ready',
-                  'bg-error-text': doc.processing_status === 'error',
-                  'bg-foreground-muted':
-                    doc.processing_status !== 'ready' && doc.processing_status !== 'error',
-                }"
-              ></span>
+              <span class="w-1.5 h-1.5 rounded-full {{ statusDot(doc.processing_status) }}"></span>
               {{ doc.processing_status }}
             </span>
           </td>
-          <td class="px-5 py-3 text-foreground-muted text-sm capitalize">
-            {{ doc.signing_status }}
+
+          <td class="px-4 py-3.5 hidden lg:table-cell">
+            <span
+              class="inline-flex items-center px-2.5 py-1 rounded-lg text-[11.5px]
+                         font-medium capitalize {{ signingBg(doc.signing_status) }}"
+            >
+              {{ doc.signing_status || 'unsigned' }}
+            </span>
           </td>
-          <td class="px-5 py-3">
-            <div class="flex items-center gap-3 justify-end">
+
+          <td class="px-4 py-3.5">
+            <div class="flex items-center gap-2 justify-end">
               <button
-                class="px-2.5 py-1.5 text-xs font-bold rounded-md border border-border text-foreground bg-background-subtle cursor-pointer"
+                class="px-3 py-1.5 text-[12px] font-medium rounded-lg border border-border text-foreground-muted bg-background hover:bg-hover-background hover:text-foreground transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
               >
                 View
               </button>
-              <button
-                class="flex items-center justify-center w-7 h-7 rounded-md hover:border border-border text-foreground bg-background-subtle cursor-pointer"
-              >
-                <app-icon [name]="'Ellipsis'" [size]="14" />
-              </button>
+              <div class="relative">
+                <button
+                  (click)="toggleMenu(doc.id, $event)"
+                  class="w-7 h-7 flex items-center justify-center rounded-md border border-border text-foreground-muted bg-background hover:bg-hover-background hover:text-foreground transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+                >
+                  <app-icon name="EllipsisVertical" [size]="14" />
+                </button>
+
+                @if (activeMenu() === doc.id) {
+                  <div
+                    class="absolute right-0 top-9 z-30 w-44 bg-background border border-border rounded-xl shadow-lg overflow-hidden"
+                    (click)="$event.stopPropagation()"
+                  >
+                    <button
+                      class="w-full flex items-center gap-3 px-4 py-2.5 text-[12.5px] text-foreground-muted hover:bg-hover-background hover:text-foreground transition-colors cursor-pointer"
+                    >
+                      <app-icon name="Eye" [size]="14" />
+                      View
+                    </button>
+                    <button
+                      class="w-full flex items-center gap-3 px-4 py-2.5 text-[12.5px] text-foreground-muted hover:bg-hover-background hover:text-foreground transition-colors cursor-pointer"
+                    >
+                      <app-icon name="Download" [size]="14" />
+                      Download
+                    </button>
+                    <button
+                      class="w-full flex items-center gap-3 px-4 py-2.5 text-[12.5px] text-foreground-muted hover:bg-hover-background hover:text-foreground transition-colors cursor-pointer"
+                    >
+                      <app-icon name="KeyRound" [size]="14" />
+                      Sign
+                    </button>
+                    <button
+                      class="w-full flex items-center gap-3 px-4 py-2.5 text-[12.5px] text-error-text hover:bg-error-bg-hover transition-colors cursor-pointer"
+                    >
+                      <app-icon name="Trash2" [size]="14" />
+                      Delete
+                    </button>
+                  </div>
+                }
+              </div>
             </div>
           </td>
         </tr>
       }
     </tbody>
   </table>
+</div>
 
-  <div class="flex justify-between px-5 py-5 border-t border-border bg-background-subtle">
-    <span class="px-2 py-1 text-xs font-medium rounded-md border border-border capitalize">
-      {{ documents.length }} {{ documents.length === 1 ? 'document' : 'documents' }}
-    </span>
-    <div class="flex gap-3">
-      <span
-        class="flex gap-1 items-center px-2 py-1 text-xs font-medium rounded-md border border-border"
-      >
-        <app-icon [name]="'ChevronLeft'" [size]="14" /> Previous
-      </span>
-      <span
-        class="flex gap-1 items-center px-2 py-1 text-xs font-medium rounded-md border border-border"
-      >
-        Next <app-icon [name]="'ChevronRight'" [size]="14" />
-      </span>
+<!-- mobile card stack -->
+<div class="md:hidden flex flex-col gap-2">
+  @for (doc of documents; track doc.id) {
+    <div
+      class="rounded-xl border border-border bg-background p-4
+                {{ selectedIds.has(doc.id) ? 'border-[oklch(0.70_0.06_240)]' : '' }}
+                transition-colors"
+    >
+      <div class="flex items-start gap-3">
+        <input
+          type="checkbox"
+          [checked]="selectedIds.has(doc.id)"
+          (change)="toggleOne.emit(doc.id)"
+          class="mt-0.5 w-4 h-4 rounded border border-border cursor-pointer accent-accent"
+        />
+        <div
+          class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0
+                    {{ fileTypeBg(doc.file_type) }}"
+        >
+          <app-icon name="FileSpreadsheet" [size]="15" />
+        </div>
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <p class="text-[13.5px] font-medium text-foreground line-clamp-2 capitalize mb-1">
+            {{ doc.name }}
+          </p>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span
+              class="inline-flex items-center px-2 py-0.5 rounded-md text-[10.5px] font-semibold
+                         uppercase tracking-wide {{ fileTypeBg(doc.file_type) }}"
+            >
+              .{{ doc.file_type }}
+            </span>
+            <span
+              class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[11px]
+                         font-medium capitalize {{ statusBg(doc.processing_status) }}"
+            >
+              <span class="w-1.5 h-1.5 rounded-full {{ statusDot(doc.processing_status) }}"></span>
+              {{ doc.processing_status }}
+            </span>
+            <span
+              class="inline-flex items-center px-2 py-0.5 rounded-lg text-[11px]
+                         font-medium capitalize {{ signingBg(doc.signing_status) }}"
+            >
+              {{ doc.signing_status || 'unsigned' }}
+            </span>
+          </div>
+          <p class="text-[11.5px] font-light text-foreground-muted mt-1.5">
+            {{ doc.created_at | date: 'MMM d, y' }} · {{ doc.file_size_display }}
+          </p>
+        </div>
+        <!-- Actions -->
+        <button
+          class="px-2.5 py-1.5 text-[12px] font-medium rounded-lg border border-border text-foreground-muted bg-background hover:bg-hover-background transition-colors cursor-pointer shrink-0"
+        >
+          View
+        </button>
+      </div>
     </div>
-  </div>
+  }
 </div>

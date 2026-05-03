@@ -66,6 +66,7 @@ class DocumentListSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "owner_email",
+            "file_size",
             "file_size_display",
             "file_type",
             "processing_status",

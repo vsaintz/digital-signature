@@ -1,13 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
 @import 'tailwindcss';
 
 :root {
-  --background: oklch(0.9818 0.0054 95.1);
-  --background-subtle: oklch(1 0 0);
+  --background: #ffffff;
+  --background-subtle: #f8f8f6;
+
   --foreground: oklch(0.3012 0 0);
-  --text-accent: oklch(0.7271 0.151 21.49);
   --foreground-muted: oklch(0.5555 0 0);
-  --hover-background: oklch(0.9485 0.0109 95.17);
-  --border: oklch(0.9276 0.0058 264.53);
+
+  --text-accent: #d67e5f;
+  --hover-background: #f2f2f2;
+  --border: oklch(0.92 0.005 95);
+  --divider-border: oklch(0.965_0.003_95);
+
   --status: oklch(0.7227 0.192 149.58);
   --error: oklch(65.492% 0.20876 25.019);
 
@@ -18,10 +23,12 @@
   --success-border-hover: oklch(0.75 0.15 149.58);
 
   --error-bg: oklch(0.96 0.04 25.019);
-  --error-text: oklch(0.45 0.18 25.019);
+  --error-text-hover: oklch(0.45 0.18 25.019);
   --error-border: oklch(0.85 0.12 25.019);
   --error-bg-hover: oklch(0.93 0.04 25.019);
   --error-border-hover: oklch(0.75 0.18 25.019);
+
+  --font-dm-sans: 'DM Sans', system-ui, sans-serif;
 }
 
 .theme-inverse {
@@ -29,9 +36,10 @@
   --background-subtle: oklch(0.9485 0.0109 95.17);
   --hover-background: oklch(0.1 0 0);
   --foreground: oklch(0.9818 0.0054 95.1);
-  --status: oklch(0.7227 0.192 149.58);
   --foreground-muted: oklch(91.887% 0.0001 271.152 / 0.8);
   --border: oklch(0.38 0 0);
+  --text-accent: oklch(0.6 0.09 240);
+  --status: oklch(0.7227 0.192 149.58);
 }
 
 @theme {
@@ -42,6 +50,7 @@
   --color-foreground-muted: var(--foreground-muted);
   --color-hover-background: var(--hover-background);
   --color-border: var(--border);
+
   --color-status: var(--status);
   --color-error: var(--error);
 
@@ -52,10 +61,12 @@
   --color-success-border-hover: var(--success-border-hover);
 
   --color-error-bg: var(--error-bg);
-  --color-error-text: var(--error-text);
+  --color-error-text-hover: var(--error-text-hover);
   --color-error-border: var(--error-border);
   --color-error-bg-hover: var(--error-bg-hover);
   --color-error-border-hover: var(--error-border-hover);
+
+  --font-family-dm-sans: var(--font-dm-sans);
 }
 
 body {
@@ -64,6 +75,22 @@ body {
   padding: 0;
   margin: 0;
   overflow-y: auto;
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-dm-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: oklch(0.88 0.004 95);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.8 0.006 95);
 }
