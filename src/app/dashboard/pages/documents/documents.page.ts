@@ -1,7 +1,7 @@
 import { Component, signal, ViewChild } from "@angular/core"
 
 import { IconComponent } from "@shared/icons/icons.component"
-import { ListDocumentComponent } from "./components/list-document.component"
+import { ListDocumentComponent } from "./components/document-list.component"
 import { FileUploadComponent } from "@dashboard/components/file-upload.component"
 
 @Component({

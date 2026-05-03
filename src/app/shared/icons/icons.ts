@@ -26,6 +26,19 @@ import {
   BadgeIndianRupee,
   BicepsFlexed,
   Loader,
+  Menu,
+  EllipsisVertical,
+  LayoutGrid,
+  Presentation,
+  Folder,
+  FolderSearch,
+  List,
+  Star,
+  Download,
+  Eye,
+  FileSearchCorner,
+  TrendingUp,
+  TrendingDown,
 } from "lucide-angular"
 
 export const APP_ICONS = {
@@ -56,6 +69,19 @@ export const APP_ICONS = {
   BadgeIndianRupee,
   BicepsFlexed,
   Loader,
+  Menu,
+  EllipsisVertical,
+  LayoutGrid,
+  Presentation,
+  Folder,
+  FolderSearch,
+  List,
+  Star,
+  Download,
+  Eye,
+  FileSearchCorner,
+  TrendingUp,
+  TrendingDown,
 } as const
 
 export type AppIconName = keyof typeof APP_ICONS

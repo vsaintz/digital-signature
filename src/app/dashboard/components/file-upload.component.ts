@@ -8,9 +8,10 @@ import {
   EventEmitter,
 } from "@angular/core"
 import { DecimalPipe } from "@angular/common"
-import { IconComponent } from "@shared/icons/icons.component"
-import { DocumentService } from "@services/document.service"
 import { finalize } from "rxjs"
+
+import { DocumentService } from "@services/document.service"
+import { IconComponent } from "@shared/icons/icons.component"
 
 @Component({
   selector: "dash-file-upload",
