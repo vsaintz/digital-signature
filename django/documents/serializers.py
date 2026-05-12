@@ -72,6 +72,7 @@ class DocumentListSerializer(serializers.ModelSerializer):
             "processing_status",
             "signing_status",
             "created_at",
+            "project",
         ]
         read_only_fields = fields
 

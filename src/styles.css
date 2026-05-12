@@ -2,16 +2,18 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --background-subtle: #f8f8f6;
+  --background: oklch(1 0 0);
+  --background-subtle: oklch(0.9786 0.0026 106.45);
 
   --foreground: oklch(0.3012 0 0);
   --foreground-muted: oklch(0.5555 0 0);
+  --placeholder-text: oklch(0.72 0 0);
 
-  --text-accent: #d67e5f;
-  --hover-background: #f2f2f2;
+  --accent: oklch(0.6815 0.1182 40.06);
+  --accent-bg-hover: oklch(0.6274 0.1161 39.48);
+  --hover-background: oklch(0.9612 0 0);
   --border: oklch(0.92 0.005 95);
-  --divider-border: oklch(0.965_0.003_95);
+  --divider-border: oklch(0.965 0.003 95);
 
   --status: oklch(0.7227 0.192 149.58);
   --error: oklch(65.492% 0.20876 25.019);
@@ -46,10 +48,13 @@
   --color-background: var(--background);
   --color-background-subtle: var(--background-subtle);
   --color-foreground: var(--foreground);
-  --color-accent: var(--text-accent);
   --color-foreground-muted: var(--foreground-muted);
+  --color-placeholder-text: var(--placeholder-text);
+  --color-accent: var(--accent);
+  --color-accent-bg-hover: var(--accent-bg-hover);
   --color-hover-background: var(--hover-background);
   --color-border: var(--border);
+  --color-divider-border: var(--divider-border);
 
   --color-status: var(--status);
   --color-error: var(--error);
