@@ -63,6 +63,14 @@ class Document(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    project = models.ForeignKey(
+        "projects.Project",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,  # deleting a folder never deletes documents
+        related_name="documents",
+    )
+
     class Meta:
         ordering = ["-created_at"]
         verbose_name = "document"

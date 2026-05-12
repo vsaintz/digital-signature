@@ -39,6 +39,12 @@ import {
   FileSearchCorner,
   TrendingUp,
   TrendingDown,
+  CircleAlert,
+  Dot,
+  FileText,
+  Pencil,
+  Check,
+  FileX,
 } from "lucide-angular"
 
 export const APP_ICONS = {
@@ -82,6 +88,12 @@ export const APP_ICONS = {
   FileSearchCorner,
   TrendingUp,
   TrendingDown,
+  CircleAlert,
+  Dot,
+  FileText,
+  Pencil,
+  Check,
+  FileX,
 } as const
 
 export type AppIconName = keyof typeof APP_ICONS

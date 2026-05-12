@@ -1,7 +1,8 @@
 import { Injectable, PLATFORM_ID, Inject } from "@angular/core"
+import { Observable, of } from "rxjs"
 import { isPlatformBrowser } from "@angular/common"
 import { HttpClient } from "@angular/common/http"
-import { Observable, of } from "rxjs"
+
 import { environment } from "@environments/environment"
 
 export interface Document {
@@ -16,6 +17,7 @@ export interface Document {
   created_at: string
   column_count?: number
   row_count?: number
+  project?: string | null
 }
 
 export interface DocumentUploadResponse {
