@@ -86,16 +86,25 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
+* {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(0.88 0.004 95) transparent;
 }
-.custom-scrollbar::-webkit-scrollbar-track {
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
   background: transparent;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb {
+
+::-webkit-scrollbar-thumb {
   background: oklch(0.88 0.004 95);
   border-radius: 4px;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+
+::-webkit-scrollbar-thumb:hover {
   background: oklch(0.8 0.006 95);
 }

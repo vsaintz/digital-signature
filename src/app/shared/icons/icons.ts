@@ -45,6 +45,8 @@ import {
   Pencil,
   Check,
   FileX,
+  Files,
+  ArrowUpRight,
 } from "lucide-angular"
 
 export const APP_ICONS = {
@@ -94,6 +96,8 @@ export const APP_ICONS = {
   Pencil,
   Check,
   FileX,
+  Files,
+  ArrowUpRight,
 } as const
 
 export type AppIconName = keyof typeof APP_ICONS
