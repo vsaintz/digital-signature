@@ -1,39 +1,54 @@
 import { Component } from "@angular/core"
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms"
-import { Router, RouterModule } from "@angular/router"
-import { AuthService } from "@services/auth.service"
 import { CommonModule } from "@angular/common"
+import { Router, RouterLink } from "@angular/router"
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms"
+
+import { AuthService } from "@services/auth.service"
+import { AuthBanner } from "@auth/components/auth-banner.component"
 
 @Component({
   selector: "app-signin",
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, AuthBanner, RouterLink],
   templateUrl: "./signin.component.html",
 })
 export class SigninComponent {
   signinForm: FormGroup
-  error = ""
+  errorMessage: string = ""
 
   constructor(
-    private fb: FormBuilder,
+    private formBuilder: FormBuilder,
     private authService: AuthService,
     private router: Router,
   ) {
-    this.signinForm = this.fb.group({
+    this.signinForm = this.formBuilder.group({
       email: ["", [Validators.required, Validators.email]],
       password: ["", Validators.required],
     })
   }
 
   onSubmit() {
+    this.errorMessage = ""
+
     if (this.signinForm.valid) {
-      this.authService.signin(this.signinForm.value).subscribe({
-        next: () => this.router.navigate(["/dashboard"]),
+      const payload = {
+        email: this.signinForm.value.email,
+        password: this.signinForm.value.password,
+      }
+
+      this.authService.signin(payload).subscribe({
+        next: (response) => {
+          console.log("Login success")
+          this.router.navigate(["/dashboard"])
+        },
         error: (err) => {
-          this.error = "Invalid credentails"
-          console.log(this.error)
+          console.error("Connection error: ", err)
+          this.errorMessage =
+            err.error?.detail || err.error?.non_field_errors?.[0] || "Invalid email or password"
         },
       })
+    } else {
+      this.signinForm.markAllAsTouched()
+      this.errorMessage = "Please fill in all required fields"
     }
   }
 }

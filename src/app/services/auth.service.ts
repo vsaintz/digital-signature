@@ -1,7 +1,7 @@
 import { Injectable, PLATFORM_ID, Inject } from "@angular/core"
 import { isPlatformBrowser } from "@angular/common"
 import { HttpClient } from "@angular/common/http"
-import { BehaviorSubject, Observable, tap } from "rxjs"
+import { BehaviorSubject, Observable, map, tap, switchMap } from "rxjs"
 import { environment } from "@environments/environment"
 
 export interface User {
@@ -49,14 +49,14 @@ export class AuthService {
     return this.http.post(`${environment.apiUrl}/users/auth/register/`, payload)
   }
 
-  signin(payload: { email: string; password: string }): Observable<any> {
+  signin(payload: { email: string; password: string }): Observable<User> {
     return this.http.post<TokenPair>(`${environment.apiUrl}/users/auth/login/`, payload).pipe(
       tap((tokens) => {
         if (!this.isBrowser) return
         localStorage.setItem("access_token", tokens.access)
         localStorage.setItem("refresh_token", tokens.refresh)
-        this.fetchAndStoreUser().subscribe()
       }),
+      switchMap(() => this.fetchAndStoreUser()),
     )
   }
 
@@ -70,7 +70,7 @@ export class AuthService {
     )
   }
 
-  signout(): void {
+  clearSession(): void {
     if (this.isBrowser) {
       localStorage.removeItem("access_token")
       localStorage.removeItem("refresh_token")
@@ -79,7 +79,11 @@ export class AuthService {
     this.currentUser$.next(null)
   }
 
-  refreshAccessToken(): Observable<{ access: string }> {
+  signout(): void {
+    this.clearSession()
+  }
+
+  refreshToken(): Observable<string> {
     const refresh = this.isBrowser ? localStorage.getItem("refresh_token") : null
     return this.http
       .post<{ access: string }>(`${environment.apiUrl}/users/auth/refresh/`, { refresh })
@@ -88,6 +92,7 @@ export class AuthService {
           if (!this.isBrowser) return
           localStorage.setItem("access_token", data.access)
         }),
+        map((data) => data.access),
       )
   }
 
@@ -95,8 +100,19 @@ export class AuthService {
     return this.isBrowser ? localStorage.getItem("access_token") : null
   }
 
+  isTokenExpired(): boolean {
+    const token = this.getAccessToken()
+    if (!token) return true
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]))
+      return payload.exp * 1000 < Date.now()
+    } catch {
+      return true
+    }
+  }
+
   get isAuthenticated(): boolean {
-    return !!this.getAccessToken()
+    return !!this.getAccessToken() && !this.isTokenExpired()
   }
 
   get user$(): Observable<User | null> {
