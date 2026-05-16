@@ -1,6 +1,7 @@
 import { Routes } from "@angular/router"
 
 import { authGuard } from "@guards/auth.guard"
+import { guestGuard } from "@guards/guest.guard"
 
 import { SigninComponent } from "@auth/signin/signin.component"
 import { SignupComponent } from "@auth/signup/signup.component"
@@ -23,6 +24,7 @@ export const routes: Routes = [
   },
   {
     path: "auth",
+    canActivate: [guestGuard],
     children: [
       { path: "signin", component: SigninComponent },
       { path: "signup", component: SignupComponent },
