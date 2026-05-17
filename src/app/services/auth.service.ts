@@ -1,7 +1,7 @@
 import { Injectable, PLATFORM_ID, Inject } from "@angular/core"
 import { isPlatformBrowser } from "@angular/common"
 import { HttpClient } from "@angular/common/http"
-import { BehaviorSubject, Observable, map, tap, switchMap } from "rxjs"
+import { BehaviorSubject, Observable, map, tap, switchMap, finalize } from "rxjs"
 import { environment } from "@environments/environment"
 
 export interface User {
@@ -79,8 +79,12 @@ export class AuthService {
     this.currentUser$.next(null)
   }
 
-  signout(): void {
-    this.clearSession()
+  signout(): Observable<void> {
+    const refresh = this.isBrowser ? localStorage.getItem("refresh_token") : null
+    return this.http.post(`${environment.apiUrl}/users/auth/logout/`, { refresh }).pipe(
+      finalize(() => this.clearSession()),
+      map(() => void 0),
+    )
   }
 
   refreshToken(): Observable<string> {
