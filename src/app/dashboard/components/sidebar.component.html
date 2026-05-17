@@ -136,7 +136,7 @@
     }
   </nav>
 
-  <div class="shrink-0 px-3 pb-4 pt-3 border-t border-border relative">
+  <div class="shrink-0 px-3 pb-4 pt-3 relative">
     @if (user$ | async; as user) {
       <button
         (click)="toggleUserPopover($event)"
@@ -169,7 +169,7 @@
           class="absolute bottom-[calc(100%_-_8px)] left-3 right-3 z-50 bg-background border border-border rounded-xl shadow-lg overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-150"
           (click)="$event.stopPropagation()"
         >
-          <div class="flex items-center gap-3 px-4 py-3.5 border-b border-border">
+          <div class="flex items-center gap-3 px-4 py-3.5">
             <div
               class="w-8 h-8 rounded-lg bg-black text-white flex items-center justify-center text-[13px] font-semibold shrink-0 select-none"
             >
@@ -186,6 +186,13 @@
           </div>
 
           <div class="py-1">
+            <button
+              (click)="navigateTo('configuration/settings')"
+              class="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-foreground-muted hover:bg-hover-background hover:text-foreground transition-colors cursor-pointer"
+            >
+              <app-icon name="User" [size]="15" />
+              Profile
+            </button>
             <button
               (click)="navigateTo('configuration/settings')"
               class="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-foreground-muted hover:bg-hover-background hover:text-foreground transition-colors cursor-pointer"

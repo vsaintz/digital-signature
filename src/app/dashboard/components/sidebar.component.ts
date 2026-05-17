@@ -92,8 +92,10 @@ export class SidebarComponent {
 
   handleSignOut(): void {
     this.showUserPopover.set(false)
-    this.authService.signout()
-    this.router.navigate(["/auth/signin"])
+    this.authService.signout().subscribe({
+      next: () => this.router.navigate(["/auth/signin"]),
+      error: () => this.router.navigate(["/auth/signin"]),
+    })
   }
 
   navigateTo(path: string): void {
@@ -106,8 +108,8 @@ export class SidebarComponent {
   }
 
   getInitials(firstName: string, lastName: string): string {
-    if (firstName) return firstName.slice(0, 2).toUpperCase()
-    if (lastName) return lastName.slice(0, 2).toUpperCase()
-    return "U"
+    const first = firstName?.charAt(0) ?? ""
+    const last = lastName?.charAt(0) ?? ""
+    return (first + last).toUpperCase() || "U"
   }
 }
