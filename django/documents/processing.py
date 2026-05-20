@@ -54,8 +54,7 @@ def compute_file_hash(document: Document, file) -> None:
 
 def normalize_content(document: Document, file) -> None:
     normalized = normalize(file, document.file_type)
-    canonical_json = normalized.to_json()
-    content_hash = hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
+    content_hash = normalized.get_canonical_hash()
 
     DocumentData.objects.update_or_create(
         document=document,
@@ -65,7 +64,6 @@ def normalize_content(document: Document, file) -> None:
         },
     )
 
-    # copy lightweight stats to document (for fast dashboard queries)
     document.row_count = len(normalized.rows)
     document.column_count = len(normalized.columns)
     document.column_names = normalized.columns
@@ -78,16 +76,21 @@ _PIPELINE = [
     normalize_content,
 ]
 
-
 def run_pipeline(document: Document, file) -> None:
+    logger.info("Document %s transitioning to PROCESSING.", document.id)
     document.processing_status = Document.ProcessingStatus.PROCESSING
+    document.save(update_fields=["processing_status"])
 
     try:
         for step in _PIPELINE:
+            logger.debug("Running pipeline step %s for document %s.", step.__name__, document.id)
             step(document, file)
+
+        logger.info("Document %s pipeline completed successfully. Transitioning to READY.", document.id)
         document.processing_status = Document.ProcessingStatus.READY
         document.processing_error = ""
+
     except Exception as exc:
         logger.exception("Pipeline failed for document %s: %s", document.id, exc)
         document.processing_status = Document.ProcessingStatus.FAILED
-        document.processing_error = str(exc)
+        document.processing_error = f"{type(exc).__name__}: {str(exc)}"
