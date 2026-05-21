@@ -46,8 +46,11 @@
     <document-table
       [documents]="paginatedDocs()"
       [selectedIds]="selectedIds"
+      [signingInProgress]="signingInProgress()"
       (toggleOne)="toggleOne($event)"
       (toggleAll)="toggleAll()"
+      (signDocument)="onSignDocument($event)"
+      (verifyDocument)="onVerifyDocument($event)"
     />
 
     <div class="flex items-center justify-between mt-1 mb-7">

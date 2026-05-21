@@ -20,8 +20,12 @@ import { IconComponent } from "@shared/icons/icons.component"
 export class DocumentTableComponent {
   @Input() documents: Document[] = []
   @Input() selectedIds = new Set<string>()
+  @Input() signingInProgress = new Set<string>()
+
   @Output() toggleOne = new EventEmitter<string>()
   @Output() toggleAll = new EventEmitter<void>()
+  @Output() signDocument = new EventEmitter<string>()
+  @Output() verifyDocument = new EventEmitter<string>()
 
   activeMenu = signal<string | null>(null)
 
@@ -35,6 +39,18 @@ export class DocumentTableComponent {
   toggleMenu(id: string, e: MouseEvent) {
     e.stopPropagation()
     this.activeMenu.update((cur) => (cur === id ? null : id))
+  }
+
+  onSignClick(id: string, e: MouseEvent) {
+    e.stopPropagation()
+    this.activeMenu.set(null)
+    this.signDocument.emit(id)
+  }
+
+  onVerifyClick(id: string, e: MouseEvent) {
+    e.stopPropagation()
+    this.activeMenu.set(null)
+    this.verifyDocument.emit(id)
   }
 
   get isAllSelected(): boolean {

@@ -139,12 +139,34 @@
                       <app-icon name="Download" [size]="14" />
                       Download
                     </button>
-                    <button
-                      class="w-full flex items-center gap-3 px-4 py-2.5 text-[12.5px] text-foreground-muted hover:bg-hover-background hover:text-foreground transition-colors cursor-pointer"
-                    >
-                      <app-icon name="KeyRound" [size]="14" />
-                      Sign
-                    </button>
+                    @if (doc.signing_status === 'unsigned' || !doc.signing_status) {
+                      <button
+                        (click)="onSignClick(doc.id, $event)"
+                        [disabled]="signingInProgress.has(doc.id)"
+                        class="w-full flex items-center gap-3 px-4 py-2.5 text-[12.5px] transition-colors
+                                 {{
+                          signingInProgress.has(doc.id)
+                            ? 'text-accent opacity-70 cursor-not-allowed'
+                            : 'text-foreground-muted hover:bg-hover-background hover:text-foreground cursor-pointer'
+                        }}"
+                      >
+                        @if (signingInProgress.has(doc.id)) {
+                          <app-icon name="Loader" [size]="14" class="animate-spin" />
+                          Signing...
+                        } @else {
+                          <app-icon name="KeyRound" [size]="14" />
+                          Sign
+                        }
+                      </button>
+                    } @else {
+                      <button
+                        (click)="onVerifyClick(doc.id, $event)"
+                        class="w-full flex items-center gap-3 px-4 py-2.5 text-[12.5px] text-foreground-muted hover:bg-hover-background hover:text-foreground transition-colors cursor-pointer"
+                      >
+                        <app-icon name="ShieldAlert" [size]="14" />
+                        Verify Signature
+                      </button>
+                    }
                     <button
                       class="w-full flex items-center gap-3 px-4 py-2.5 text-[12.5px] text-error-text hover:bg-error-bg-hover transition-colors cursor-pointer"
                     >
