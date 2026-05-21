@@ -1,3 +1,4 @@
+# django/signatures/views.py
 from django.shortcuts import get_object_or_404
 from documents.models import Document
 from rest_framework import status
@@ -7,7 +8,6 @@ from rest_framework.response import Response
 
 from .models import DocumentSignature
 from .services import SignatureService
-
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -38,8 +38,11 @@ def verify_document_view(request, document_id):
 
     is_valid = SignatureService.verify_signature(signature)
 
+    # ADDED THE NEW METADATA TO THE RESPONSE
     return Response({
         "status": "verified" if is_valid else "tampered",
         "signed_by": signature.signer.email if signature.signer else "Unknown",
-        "signed_at": signature.signed_at
+        "signed_at": signature.signed_at,
+        "algorithm": signature.algorithm,
+        "has_certificate": bool(signature.certificate)
     })

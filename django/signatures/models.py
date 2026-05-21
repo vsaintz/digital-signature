@@ -6,6 +6,24 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from documents.models import Document
 
+class SignerProfile(models.Model):
+    """Stores the permanent, encrypted cryptographic identity of a user."""
+    class SignatureAlgorithm(models.TextChoices):
+        RSA = "RSA-SHA256", "RSA-SHA256"
+        ECDSA = "ECDSA-P256-SHA256", "ECDSA-P256-SHA256"
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="signer_profile")
+    private_key = models.TextField(help_text="Fernet encrypted PEM private key")
+    public_key = models.TextField(help_text="PEM public key")
+    certificate = models.TextField(help_text="X.509 Certificate PEM", blank=True, null=True)
+    signature_algorithm = models.CharField(
+        max_length=50, 
+        choices=SignatureAlgorithm.choices, 
+        default=SignatureAlgorithm.RSA
+    )
+
+    def __str__(self):
+        return f"Signer Profile for {self.user}"
 
 class DocumentSignature(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -44,6 +62,17 @@ class DocumentSignature(models.Model):
         help_text=_("Browser or client information for audit purposes.")
     )
     signed_at = models.DateTimeField(auto_now_add=True)
+    
+    algorithm = models.CharField(
+        max_length=50, 
+        default="RSA-SHA256",
+        help_text="Algorithm used for signing (e.g., RSA-SHA256)"
+    )
+    certificate = models.TextField(
+        blank=True,
+        null=True,
+        help_text="The X.509 certificate of the signer at the time of signing."
+    )
 
     class Meta:
         ordering = ["-signed_at"]
