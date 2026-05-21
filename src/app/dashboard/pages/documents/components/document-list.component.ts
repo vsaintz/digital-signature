@@ -7,11 +7,12 @@ import {
   computed,
 } from "@angular/core"
 import { DocumentService, Document } from "@services/document.service"
+import { SignatureService } from "@services/signature.service"
+import { IconComponent } from "@shared/icons/icons.component"
 
 import { DocumentToolbarComponent, FilterStatus, SortField } from "./document-toolbar.component"
 import { StatsCardComponent } from "./stats-card.component"
 import { DocumentTableComponent } from "./document-table.component"
-import { IconComponent } from "@shared/icons/icons.component"
 
 const PAGE_SIZE = 10
 
@@ -24,6 +25,11 @@ const PAGE_SIZE = 10
 export class ListDocumentComponent {
   allDocuments = signal<Document[]>([])
   isLoading = signal(true)
+
+  private signatureService = inject(SignatureService)
+  private cdr = inject(ChangeDetectorRef)
+
+  signingInProgress = signal<Set<string>>(new Set())
 
   selectedIds = new Set<string>()
 
@@ -90,7 +96,6 @@ export class ListDocumentComponent {
   }
 
   private documentService = inject(DocumentService)
-  private cdr = inject(ChangeDetectorRef)
 
   constructor() {
     afterNextRender(() => this.loadDocuments())
@@ -107,6 +112,46 @@ export class ListDocumentComponent {
       error: () => {
         this.isLoading.set(false)
         this.cdr.detectChanges()
+      },
+    })
+  }
+
+  onSignDocument(id: string): void {
+    this.signingInProgress.update((set) => {
+      const newSet = new Set(set)
+      newSet.add(id)
+      return newSet
+    })
+
+    this.signatureService.signDocument(id).subscribe({
+      next: (res) => {
+        console.log("Success:", res.message)
+        this.loadDocuments()
+      },
+      error: (err) => {
+        console.error("Failed to sign document:", err)
+      },
+      complete: () => {
+        this.signingInProgress.update((set) => {
+          const newSet = new Set(set)
+          newSet.delete(id)
+          return newSet
+        })
+      },
+    })
+  }
+
+  onVerifyDocument(id: string): void {
+    this.signatureService.verifyDocument(id).subscribe({
+      next: (res) => {
+        const message =
+          res.status === "verified"
+            ? `Signature is Valid\nSigned by: ${res.signed_by}\nDate: ${new Date(res.signed_at!).toLocaleString()}`
+            : `WARNING: Document Tampered or Unsigned!`
+        alert(message)
+      },
+      error: (err) => {
+        console.error("Failed to verify document:", err)
       },
     })
   }
