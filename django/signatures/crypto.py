@@ -45,7 +45,7 @@ def create_self_signed_cert(private_key_pem: str, username: str) -> str:
         raise ValueError("Key must be an RSA private key")
         
     subject = issuer = x509.Name([
-        x509.NameAttribute(NameOID.ORGANIZATION_NAME, "DocuSign Digital Signature"),
+        x509.NameAttribute(NameOID.ORGANIZATION_NAME, "DocuSign Digital Signature."),
         x509.NameAttribute(NameOID.COMMON_NAME, username),
     ])
     cert = (
