@@ -23,11 +23,15 @@ def _get_visible_queryset(user):
 def _assert_can_edit(user, document: Document) -> None:
     if document.owner != user:
         raise PermissionDenied("You do not have permission to edit this document.")
+    if document.signing_status == document.SigningStatus.SIGNED:
+        raise PermissionDenied("Cannot edit a cryptographically sealed document.")
 
 
 def _assert_can_delete(user, document: Document) -> None:
     if document.owner != user:
         raise PermissionDenied("You do not have permission to delete this document.")
+    if document.signing_status == document.SigningStatus.SIGNED:
+        raise PermissionDenied("Cannot delete a cryptographically sealed document.")
 
 
 def _assert_can_download(user, document: Document) -> None:

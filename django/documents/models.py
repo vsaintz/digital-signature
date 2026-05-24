@@ -11,7 +11,6 @@ from django.utils.translation import gettext_lazy as _
 def document_upload_path(instance, filename):
     return f"documents/{instance.owner_id}/{instance.id}/{filename}"
 
-
 class Document(models.Model):
     class FileType(models.TextChoices):
         CSV = "csv", _("CSV")
@@ -97,6 +96,17 @@ class Document(models.Model):
         except DocumentData.DoesNotExist:
             return None
 
+    def clean(self):
+        if self.pk is not None:
+            original = Document.objects.get(pk=self.pk)
+            if original.signing_status == self.SigningStatus.SIGNED:
+                if self.name != original.name or self.file != original.file:
+                  raise ValidationError("Cannot modify the contents or name of a cryptographically sealed document.")
+        super().clean()
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 class DocumentData(models.Model):
     document = models.OneToOneField(
@@ -120,6 +130,7 @@ class DocumentData(models.Model):
     def clean(self):
         if self.pk and self.document.signing_status != Document.SigningStatus.UNSIGNED:
             raise ValidationError("Cannot modify data for a document that is signed or pending signature.")
+        super().clean()
 
     def save(self, *args, **kwargs):
         self.clean()
