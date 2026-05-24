@@ -125,4 +125,11 @@
       </div>
     </div>
   }
+
+  <verification-modal
+    [isOpen]="showVerificationModal()"
+    [isLoading]="isVerifying()"
+    [result]="verificationResult()"
+    (close)="closeVerificationModal()"
+  />
 </div>

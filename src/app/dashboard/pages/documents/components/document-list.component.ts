@@ -7,24 +7,34 @@ import {
   computed,
 } from "@angular/core"
 import { DocumentService, Document } from "@services/document.service"
-import { SignatureService } from "@services/signature.service"
+import { SignatureService, VerificationResponse } from "@services/signature.service"
 import { IconComponent } from "@shared/icons/icons.component"
 
 import { DocumentToolbarComponent, FilterStatus, SortField } from "./document-toolbar.component"
 import { StatsCardComponent } from "./stats-card.component"
 import { DocumentTableComponent } from "./document-table.component"
+import { VerificationModalComponent } from "./verification-modal.component"
 
 const PAGE_SIZE = 10
 
 @Component({
   selector: "list-document",
   standalone: true,
-  imports: [StatsCardComponent, DocumentToolbarComponent, DocumentTableComponent, IconComponent],
+  imports: [
+    StatsCardComponent,
+    DocumentToolbarComponent,
+    DocumentTableComponent,
+    IconComponent,
+    VerificationModalComponent,
+  ],
   templateUrl: "./document-list.component.html",
 })
 export class ListDocumentComponent {
   allDocuments = signal<Document[]>([])
   isLoading = signal(true)
+  showVerificationModal = signal(false)
+  isVerifying = signal(false)
+  verificationResult = signal<VerificationResponse | null>(null)
 
   private signatureService = inject(SignatureService)
   private cdr = inject(ChangeDetectorRef)
@@ -142,18 +152,27 @@ export class ListDocumentComponent {
   }
 
   onVerifyDocument(id: string): void {
+    this.showVerificationModal.set(true)
+    this.isVerifying.set(true)
+    this.verificationResult.set(null)
+
     this.signatureService.verifyDocument(id).subscribe({
       next: (res) => {
-        const message =
-          res.status === "verified"
-            ? `Signature is Valid\nSigned by: ${res.signed_by}\nDate: ${new Date(res.signed_at!).toLocaleString()}`
-            : `WARNING: Document Tampered or Unsigned!`
-        alert(message)
+        this.verificationResult.set(res)
+        this.isVerifying.set(false)
       },
       error: (err) => {
         console.error("Failed to verify document:", err)
+        this.verificationResult.set({ status: "tampered" })
+        this.isVerifying.set(false)
       },
     })
+  }
+
+  closeVerificationModal() {
+    this.showVerificationModal.set(false)
+    // slight delay to clear data so it doesn't flicker while animating out
+    setTimeout(() => this.verificationResult.set(null), 200)
   }
 
   visibleEndCount = computed(() => {
