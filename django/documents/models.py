@@ -97,11 +97,11 @@ class Document(models.Model):
             return None
 
     def clean(self):
-        if self.pk is not None:
+        if not self._state.adding:
             original = Document.objects.get(pk=self.pk)
             if original.signing_status == self.SigningStatus.SIGNED:
                 if self.name != original.name or self.file != original.file:
-                  raise ValidationError("Cannot modify the contents or name of a cryptographically sealed document.")
+                    raise ValidationError("Cannot modify the contents or name of a cryptographically sealed document.")
         super().clean()
 
     def save(self, *args, **kwargs):
