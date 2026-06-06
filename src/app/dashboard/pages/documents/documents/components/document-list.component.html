@@ -11,6 +11,8 @@
     (searchChange)="onSearchChange($event)"
     (filterChange)="onFilterChange($event)"
     (sortChange)="onSortChange($event)"
+    (downloadSelected)="onDownloadSelected()"
+    (deleteSelected)="onDeleteSelected()"
   />
 
   @if (isLoading()) {
@@ -24,15 +26,13 @@
 
   @if (!isLoading() && filteredDocs().length === 0) {
     <div class="flex flex-col items-center justify-center py-24 text-center">
-      <div
-        class="w-16 h-16 rounded-2xl bg-background text-accent flex items-center justify-center mb-5"
-      >
-        <app-icon name="FileSearchCorner" [size]="30" />
+      <div class="mb-5 p-5 rounded-full text-foreground-muted bg-hover-background">
+        <svg-emptystate-icon [size]="55" />
       </div>
-      <p class="text-[18px] font-medium text-foreground mb-2">
+      <p class="text-lg font-medium text-foreground mb-2">
         {{ searchQuery() || activeFilter() !== 'all' ? 'No documents match' : 'No documents yet' }}
       </p>
-      <p class="text-[13px] font-light text-foreground-muted max-w-xs">
+      <p class="text-xs font-medium text-foreground-muted max-w-xs">
         {{
           searchQuery() || activeFilter() !== 'all'
             ? 'Try adjusting your search or filter.'
@@ -51,6 +51,9 @@
       (toggleAll)="toggleAll()"
       (signDocument)="onSignDocument($event)"
       (verifyDocument)="onVerifyDocument($event)"
+      (downloadDocument)="onDownloadDocument($event)"
+      (deleteDocument)="onDeleteDocument($event)"
+      (viewDocument)="onViewDocument($event)"
     />
 
     <div class="flex items-center justify-between mt-1 mb-7">
@@ -131,5 +134,12 @@
     [isLoading]="isVerifying()"
     [result]="verificationResult()"
     (close)="closeVerificationModal()"
+  />
+
+  <delete-confirm-dialog
+    [deleteCount]="pendingDeleteCount()"
+    [documentName]="pendingDeleteName()"
+    (confirmed)="onDeleteConfirmed()"
+    (cancelled)="onDeleteCancelled()"
   />
 </div>

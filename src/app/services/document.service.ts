@@ -50,4 +50,28 @@ export class DocumentService {
     formData.append("file", file)
     return this.http.post<DocumentUploadResponse>(`${this.baseUrl}/`, formData)
   }
+
+  deleteDocument(id: string): Observable<any> {
+    if (!this.isBrowser) return of(null)
+    return this.http.delete(`${this.baseUrl}/${id}/`)
+  }
+
+  downloadDocument(id: string, fileName: string = "document"): void {
+    if (!this.isBrowser) return
+
+    this.http.get(`${this.baseUrl}/${id}/download/`, { responseType: "blob" }).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = fileName
+        document.body.appendChild(a)
+        a.click()
+
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
+      },
+      error: (err) => console.error("Download failed", err),
+    })
+  }
 }

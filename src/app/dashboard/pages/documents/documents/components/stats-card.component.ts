@@ -15,31 +15,31 @@ interface StatItem {
   template: `
     <div
       class="grid grid-cols-2 sm:grid-cols-4 divide-x divide-border border border-border
-                rounded-xl overflow-hidden bg-background"
+             rounded-xl overflow-hidden bg-background"
     >
       @for (item of stats; track item.label) {
-        <div class="flex flex-col gap-3 px-5 py-4">
-          <span class="text-[10.5px] font-medium uppercase tracking-[0.08em] text-foreground-muted">
+        <div class="flex flex-col gap-2 sm:gap-3 px-3.5 sm:px-5 py-3.5 sm:py-4">
+          <span
+            class="text-[10px] sm:text-[10.5px] font-medium uppercase tracking-[0.08em] text-foreground-muted leading-tight"
+          >
             {{ item.label }}
           </span>
-          <span class="text-3xl font-normal text-foreground leading-none">
+          <span class="text-2xl sm:text-3xl font-normal text-foreground leading-none">
             {{ item.value }}
           </span>
-          <div class="flex items-center gap-1.5">
-            <span class="text-[11px] font-light text-foreground-muted">vs last month</span>
-
+          <div class="flex flex-wrap items-center gap-1 sm:gap-1.5">
             <span
-              class="flex items-center gap-1.5 text-[10.5px] font-medium px-1.5 py-0.5 rounded-md
-                         {{
-                item.up
-                  ? 'bg-[oklch(0.93_0.06_149)] text-[oklch(0.38_0.12_149)]'
-                  : 'bg-[oklch(0.94_0.06_25)] text-[oklch(0.45_0.14_25)]'
-              }}"
+              class="text-[10.5px] sm:text-[11px] font-light text-foreground-muted whitespace-nowrap"
+              >vs last month</span
+            >
+            <span
+              class="flex items-center gap-1 text-[10px] sm:text-[10.5px] font-medium px-1.5 py-0.5 rounded-md whitespace-nowrap
+                     {{ item.up ? 'bg-success-bg text-success-text' : 'bg-error-bg text-error' }}"
             >
               @if (item.up) {
-                <app-icon name="TrendingUp" [size]="13" />
+                <app-icon name="TrendingUp" [size]="12" />
               } @else {
-                <app-icon name="TrendingDown" [size]="13" />
+                <app-icon name="TrendingDown" [size]="12" />
               }
               {{ item.trend }}%
             </span>
