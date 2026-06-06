@@ -6,14 +6,17 @@ import {
   signal,
   computed,
 } from "@angular/core"
+import { forkJoin } from "rxjs"
 import { DocumentService, Document } from "@services/document.service"
 import { SignatureService, VerificationResponse } from "@services/signature.service"
 import { IconComponent } from "@shared/icons/icons.component"
+import { SvgEmptyStateComponent } from "@shared/icons/svg-emptystate-icon.component"
 
 import { DocumentToolbarComponent, FilterStatus, SortField } from "./document-toolbar.component"
 import { StatsCardComponent } from "./stats-card.component"
 import { DocumentTableComponent } from "./document-table.component"
 import { VerificationModalComponent } from "./verification-modal.component"
+import { DeleteConfirmDialogComponent } from "./delete-confirm-dialog.component"
 
 const PAGE_SIZE = 10
 
@@ -25,7 +28,9 @@ const PAGE_SIZE = 10
     DocumentToolbarComponent,
     DocumentTableComponent,
     IconComponent,
+    SvgEmptyStateComponent,
     VerificationModalComponent,
+    DeleteConfirmDialogComponent,
   ],
   templateUrl: "./document-list.component.html",
 })
@@ -36,8 +41,13 @@ export class ListDocumentComponent {
   isVerifying = signal(false)
   verificationResult = signal<VerificationResponse | null>(null)
 
+  pendingDeleteCount = signal(0)
+  pendingDeleteId = signal<string | null>(null)
+  pendingDeleteName = signal("")
+
   private signatureService = inject(SignatureService)
   private cdr = inject(ChangeDetectorRef)
+  private documentService = inject(DocumentService)
 
   signingInProgress = signal<Set<string>>(new Set())
 
@@ -62,7 +72,8 @@ export class ListDocumentComponent {
       list = list.filter((d) => {
         if (filter === "pending")
           return d.processing_status !== "ready" && d.processing_status !== "error"
-        return d.processing_status === filter
+        if (filter === "signed" || filter === "unsigned") return d.signing_status == filter
+        return d.processing_status == filter
       })
     }
 
@@ -74,6 +85,8 @@ export class ListDocumentComponent {
           return (b.file_size ?? 0) - (a.file_size ?? 0)
         case "status":
           return a.processing_status.localeCompare(b.processing_status)
+        case "signature":
+          return (a.signing_status || "").localeCompare(b.signing_status || "")
         case "date":
         default:
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -105,8 +118,6 @@ export class ListDocumentComponent {
     return this.selectedIds.size
   }
 
-  private documentService = inject(DocumentService)
-
   constructor() {
     afterNextRender(() => this.loadDocuments())
   }
@@ -124,6 +135,75 @@ export class ListDocumentComponent {
         this.cdr.detectChanges()
       },
     })
+  }
+
+  onDownloadDocument(id: string) {
+    const doc = this.allDocuments().find((d) => d.id === id)
+    if (doc) {
+      let fileName = doc.name
+      const ext = `.${doc.file_type}`
+      if (!fileName.toLowerCase().endsWith(ext.toLowerCase())) {
+        fileName = `${fileName}${ext}`
+      }
+      this.documentService.downloadDocument(id, fileName)
+    }
+  }
+
+  onDownloadSelected() {
+    this.selectedIds.forEach((id) => this.documentService.downloadDocument(id))
+    this.clearSelection()
+  }
+
+  onDeleteDocument(id: string) {
+    const doc = this.allDocuments().find((d) => d.id === id)
+    this.pendingDeleteId.set(id)
+    this.pendingDeleteName.set(doc?.name ?? "")
+    this.pendingDeleteCount.set(1)
+  }
+
+  onDeleteSelected() {
+    if (this.selectedIds.size === 0) return
+    this.pendingDeleteId.set(null)
+    this.pendingDeleteName.set("")
+    this.pendingDeleteCount.set(this.selectedIds.size)
+  }
+
+  onDeleteConfirmed() {
+    const singleId = this.pendingDeleteId()
+    this.pendingDeleteCount.set(0)
+
+    if (singleId) {
+      this.documentService.deleteDocument(singleId).subscribe({
+        next: () => {
+          this.selectedIds.delete(singleId)
+          this.loadDocuments()
+        },
+        error: (err) => console.error(err.error?.detail || "Failed to delete document."),
+      })
+    } else {
+      const deleteRequests = Array.from(this.selectedIds).map((id) =>
+        this.documentService.deleteDocument(id),
+      )
+      forkJoin(deleteRequests).subscribe({
+        next: () => {
+          this.clearSelection()
+          this.loadDocuments()
+        },
+        error: () => {
+          this.loadDocuments()
+        },
+      })
+    }
+  }
+
+  onDeleteCancelled() {
+    this.pendingDeleteCount.set(0)
+    this.pendingDeleteId.set(null)
+    this.pendingDeleteName.set("")
+  }
+
+  onViewDocument(id: string) {
+    this.onDownloadDocument(id)
   }
 
   onSignDocument(id: string): void {
@@ -171,7 +251,6 @@ export class ListDocumentComponent {
 
   closeVerificationModal() {
     this.showVerificationModal.set(false)
-    // slight delay to clear data so it doesn't flicker while animating out
     setTimeout(() => this.verificationResult.set(null), 200)
   }
 

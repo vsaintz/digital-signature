@@ -1,8 +1,8 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core"
 import { IconComponent } from "@shared/icons/icons.component"
 
-export type SortField = "name" | "date" | "size" | "status"
-export type FilterStatus = "all" | "ready" | "pending" | "error"
+export type SortField = "name" | "date" | "size" | "status" | "signature"
+export type FilterStatus = "all" | "ready" | "pending" | "error" | "signed" | "unsigned"
 
 @Component({
   selector: "document-toolbar",
@@ -28,6 +28,8 @@ export class DocumentToolbarComponent {
     { label: "All", value: "all" },
     { label: "Ready", value: "ready" },
     { label: "Pending", value: "pending" },
+    { label: "Signed", value: "signed" },
+    { label: "Unsigned", value: "unsigned" },
     { label: "Error", value: "error" },
   ]
 }

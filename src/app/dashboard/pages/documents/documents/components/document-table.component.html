@@ -1,0 +1,312 @@
+<div class="hidden md:block rounded-xl border border-border bg-background overflow-visible">
+  <table class="w-full">
+    <thead>
+      <tr class="border-b border-border">
+        <th class="px-4 py-3 w-10">
+          <div class="relative flex items-center justify-center w-4 h-4">
+            <input
+              type="checkbox"
+              [checked]="isAllSelected"
+              [indeterminate]="isIndeterminate"
+              (change)="toggleAll.emit()"
+              class="peer appearance-none w-4 h-4 rounded border border-border bg-background theme-inverse checked:bg-(--background) checked:border-(--border) cursor-pointer transition-colors m-0"
+            />
+            <app-icon
+              name="Check"
+              [size]="12"
+              class="absolute pointer-events-none opacity-0 peer-checked:opacity-100 text-white"
+            />
+          </div>
+        </th>
+        <th
+          class="text-left px-4 py-3 text-[10.5px] font-medium uppercase tracking-[0.08em] text-foreground-muted"
+        >
+          Name
+        </th>
+        <th
+          class="text-left px-4 py-3 text-[10.5px] font-medium uppercase tracking-[0.08em] text-foreground-muted"
+        >
+          Status
+        </th>
+        <th
+          class="text-left px-4 py-3 text-[10.5px] font-medium uppercase tracking-[0.08em] text-foreground-muted hidden lg:table-cell"
+        >
+          Type
+        </th>
+        <th
+          class="text-left px-4 py-3 text-[10.5px] font-medium uppercase tracking-[0.08em] text-foreground-muted hidden xl:table-cell"
+        >
+          Size
+        </th>
+        <th
+          class="text-left px-4 py-3 text-[10.5px] font-medium uppercase tracking-[0.08em] text-foreground-muted hidden lg:table-cell"
+        >
+          Signing
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (doc of documents; track doc.id) {
+        <tr
+          class="border-b border-divider-border last:border-b-0 hover:bg-hover-background transition-colors cursor-pointer group"
+          (click)="toggleOne.emit(doc.id)"
+        >
+          <td class="px-4 py-3">
+            <div
+              class="relative flex items-center justify-center w-4 h-4"
+              (click)="$event.stopPropagation()"
+            >
+              <input
+                type="checkbox"
+                [checked]="selectedIds.has(doc.id)"
+                (change)="toggleOne.emit(doc.id)"
+                class="peer appearance-none w-4 h-4 rounded border border-border bg-background theme-inverse checked:bg-(--background) checked:border-(--border) cursor-pointer transition-colors m-0"
+              />
+              <app-icon
+                name="Check"
+                [size]="12"
+                [stroke]="3"
+                class="absolute pointer-events-none opacity-0 peer-checked:opacity-100 text-white"
+              />
+            </div>
+          </td>
+          <td class="px-4 py-3">
+            <div class="flex items-center gap-3">
+              <div
+                class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 {{
+                  fileTypeBg(doc.file_type)
+                }}"
+              >
+                <app-icon name="FileSpreadsheet" [size]="15" />
+              </div>
+              <div class="flex flex-col">
+                <span
+                  class="text-[13px] font-medium text-foreground truncate max-w-[200px] xl:max-w-[300px]"
+                >
+                  {{ doc.name }}
+                </span>
+                <span class="text-[11.5px] text-foreground-muted">
+                  {{ doc.created_at | date: 'MMM d, y' }}
+                </span>
+              </div>
+            </div>
+          </td>
+          <td class="px-4 py-3">
+            <span
+              class="inline-flex items-center px-2.5 py-1 rounded-lg text-[12.5px] font-medium capitalize {{
+                statusBg(doc.processing_status)
+              }}"
+            >
+              {{ doc.processing_status }}
+            </span>
+          </td>
+          <td class="px-4 py-3 hidden lg:table-cell">
+            <span
+              class="inline-flex items-center px-2 py-0.5 rounded-md text-[13px] font-medium text-foreground-muted"
+            >
+              .{{ doc.file_type }}
+            </span>
+          </td>
+          <td class="px-4 py-3 hidden xl:table-cell text-[12.5px] text-foreground-muted">
+            {{ doc.file_size_display }}
+          </td>
+          <td class="px-4 py-3 hidden lg:table-cell">
+            <span
+              class="inline-flex items-center px-2.5 py-1 rounded-lg text-[12.5px] font-medium capitalize {{
+                signingBg(doc.signing_status)
+              }}"
+            >
+              {{ doc.signing_status || 'unsigned' }}
+            </span>
+          </td>
+          <td class="px-4 py-3 text-right relative">
+            <div class="flex items-center gap-5 justify-end">
+              <button
+                (click)="onViewClick(doc.id, $event)"
+                class="px-3 py-1.5 text-[12px] font-medium rounded-lg border border-border text-foreground-muted bg-background hover:text-foreground transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+              >
+                View
+              </button>
+
+              <div class="relative">
+                <button
+                  (click)="toggleMenu(doc.id, $event)"
+                  class="w-7 h-7 inline-flex items-center justify-center rounded-md text-foreground-muted hover:bg-background hover:text-foreground transition-colors opacity-0 group-hover:opacity-100"
+                >
+                  <app-icon name="EllipsisVertical" [size]="15" />
+                </button>
+
+                @if (activeMenu() === doc.id) {
+                  <div
+                    class="absolute right-4 top-10 z-50 w-44 bg-background border border-border rounded-xl shadow-lg overflow-hidden text-left"
+                    (click)="$event.stopPropagation()"
+                  >
+                    <button
+                      (click)="onViewClick(doc.id, $event)"
+                      class="w-full flex items-center gap-3 px-4 py-2.5 text-[12.5px] font-medium text-foreground-muted hover:bg-hover-background hover:text-foreground transition-colors cursor-pointer"
+                    >
+                      <app-icon name="Eye" [size]="14" /> View
+                    </button>
+
+                    @if (doc.signing_status === 'unsigned' || !doc.signing_status) {
+                      <button
+                        (click)="onSignClick(doc.id, $event)"
+                        [disabled]="signingInProgress.has(doc.id)"
+                        class="w-full flex items-center gap-3 px-4 py-2.5 font-medium text-[12.5px] transition-colors {{
+                          signingInProgress.has(doc.id)
+                            ? 'text-accent opacity-70 cursor-not-allowed'
+                            : 'text-foreground-muted hover:bg-hover-background hover:text-foreground cursor-pointer'
+                        }}"
+                      >
+                        @if (signingInProgress.has(doc.id)) {
+                          <app-icon name="Loader" [size]="14" class="animate-spin" /> Signing...
+                        } @else {
+                          <app-icon name="KeyRound" [size]="14" /> Sign
+                        }
+                      </button>
+                    } @else {
+                      <button
+                        (click)="onVerifyClick(doc.id, $event)"
+                        class="w-full flex items-center gap-3 px-4 py-2.5 text-[12.5px] font-medium text-foreground-muted hover:bg-hover-background hover:text-foreground transition-colors cursor-pointer"
+                      >
+                        <app-icon name="Barcode" [size]="14" /> Verify Signature
+                      </button>
+                    }
+                    <button
+                      (click)="onDownloadClick(doc.id, $event)"
+                      class="w-full flex items-center gap-3 px-4 py-2.5 text-[12.5px] font-medium text-foreground-muted hover:bg-hover-background hover:text-foreground transition-colors cursor-pointer"
+                    >
+                      <app-icon name="Download" [size]="14" /> Download
+                    </button>
+                    <button
+                      (click)="onDeleteClick(doc.id, $event)"
+                      class="w-full flex items-center gap-3 px-4 py-2.5 text-[12.5px] font-medium text-error hover:bg-error-bg-hover transition-colors cursor-pointer"
+                    >
+                      <app-icon name="Trash2" [size]="14" /> Delete
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<div class="block md:hidden space-y-3">
+  @for (doc of documents; track doc.id) {
+    <div
+      class="bg-background border border-border rounded-xl p-4 relative"
+      (click)="toggleOne.emit(doc.id)"
+    >
+      <div class="flex items-start justify-between">
+        <div class="flex items-start gap-3">
+          <div
+            class="relative flex items-center justify-center w-4 h-4 mt-0.5"
+            (click)="$event.stopPropagation()"
+          >
+            <input
+              type="checkbox"
+              [checked]="selectedIds.has(doc.id)"
+              (change)="toggleOne.emit(doc.id)"
+              class="peer appearance-none w-4 h-4 rounded border border-border bg-background theme-inverse checked:bg-(--background) cursor-pointer transition-colors m-0"
+            />
+            <app-icon
+              name="Check"
+              [size]="12"
+              [stroke]="3"
+              class="absolute pointer-events-none opacity-0 peer-checked:opacity-100 text-white"
+            />
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <span class="text-[13.5px] font-medium text-foreground leading-tight">{{
+              doc.name
+            }}</span>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span
+                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[11px] font-medium capitalize {{
+                  statusBg(doc.processing_status)
+                }}"
+              >
+                {{ doc.processing_status }}
+              </span>
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-lg text-[11px] font-medium capitalize {{
+                  signingBg(doc.signing_status)
+                }}"
+              >
+                {{ doc.signing_status || 'unsigned' }}
+              </span>
+            </div>
+            <span class="text-[11.5px] font-light text-foreground-muted">
+              {{ doc.created_at | date: 'MMM d, y' }} • {{ doc.file_size_display }}
+            </span>
+          </div>
+        </div>
+
+        <button
+          (click)="toggleMenu(doc.id, $event)"
+          class="w-8 h-8 flex items-center justify-center rounded-lg text-foreground-muted hover:bg-hover-background transition-colors border border-border bg-background"
+        >
+          <app-icon name="EllipsisVertical" [size]="15" />
+        </button>
+
+        @if (activeMenu() === doc.id) {
+          <div
+            class="absolute right-4 top-14 z-50 w-44 bg-background border border-border rounded-xl shadow-lg overflow-hidden text-left"
+            (click)="$event.stopPropagation()"
+          >
+            <button
+              (click)="onViewClick(doc.id, $event)"
+              class="w-full flex items-center gap-3 px-4 py-2.5 text-[12.5px] font-medium text-foreground-muted hover:bg-hover-background hover:text-foreground transition-colors cursor-pointer"
+            >
+              <app-icon name="Eye" [size]="14" /> View
+            </button>
+
+            @if (doc.signing_status === 'unsigned' || !doc.signing_status) {
+              <button
+                (click)="onSignClick(doc.id, $event)"
+                [disabled]="signingInProgress.has(doc.id)"
+                class="w-full flex items-center gap-3 px-4 py-2.5 font-medium text-[12.5px] transition-colors {{
+                  signingInProgress.has(doc.id)
+                    ? 'text-accent opacity-70 cursor-not-allowed'
+                    : 'text-foreground-muted hover:bg-hover-background hover:text-foreground cursor-pointer'
+                }}"
+              >
+                @if (signingInProgress.has(doc.id)) {
+                  <app-icon name="Loader" [size]="14" class="animate-spin" /> Signing...
+                } @else {
+                  <app-icon name="KeyRound" [size]="14" /> Sign
+                }
+              </button>
+            } @else {
+              <button
+                (click)="onVerifyClick(doc.id, $event)"
+                class="w-full flex items-center gap-3 px-4 py-2.5 text-[12.5px] font-medium text-foreground-muted hover:bg-hover-background hover:text-foreground transition-colors cursor-pointer"
+              >
+                <app-icon name="Barcode" [size]="14" /> Verify Signature
+              </button>
+            }
+
+            <button
+              (click)="onDownloadClick(doc.id, $event)"
+              class="w-full flex items-center gap-3 px-4 py-2.5 text-[12.5px] font-medium text-foreground-muted hover:bg-hover-background hover:text-foreground transition-colors cursor-pointer"
+            >
+              <app-icon name="Download" [size]="14" /> Download
+            </button>
+
+            <button
+              (click)="onDeleteClick(doc.id, $event)"
+              class="w-full flex items-center gap-3 px-4 py-2.5 text-[12.5px] font-medium text-error hover:bg-error-bg-hover transition-colors cursor-pointer"
+            >
+              <app-icon name="Trash2" [size]="14" /> Delete
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

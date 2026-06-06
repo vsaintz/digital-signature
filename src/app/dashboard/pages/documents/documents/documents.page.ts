@@ -15,7 +15,6 @@ export class DocumentsPage {
   showUploadModal = signal(false)
 
   onUploadSuccess(): void {
-    console.log("uploadSuccess fired")
     this.showUploadModal.set(false)
     this.listDocument.loadDocuments()
   }
