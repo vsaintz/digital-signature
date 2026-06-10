@@ -5,10 +5,12 @@ from .views import (
     DocumentDetailView,
     DocumentDownloadView,
     DocumentListCreateView,
+    DocumentStatsView,
 )
 
 urlpatterns = [
     path("", DocumentListCreateView.as_view(), name="document-list-create"),
+    path("stats/", DocumentStatsView.as_view(), name="document-stats"),
     path("<uuid:pk>/", DocumentDetailView.as_view(), name="document-detail"),
     path("<uuid:pk>/data/", DocumentDataView.as_view(), name="document-data"),
     path(

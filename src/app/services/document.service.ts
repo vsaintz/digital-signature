@@ -5,6 +5,13 @@ import { HttpClient } from "@angular/common/http"
 
 import { environment } from "@environments/environment"
 
+export interface DocumentStats {
+  total_documents: number
+  signed_documents: number
+  unsigned_documents: number
+  total_storage_bytes: number
+}
+
 export interface Document {
   id: string
   name: string
@@ -37,6 +44,17 @@ export class DocumentService {
     @Inject(PLATFORM_ID) platformId: object,
   ) {
     this.isBrowser = isPlatformBrowser(platformId)
+  }
+
+  getDocumentStats(): Observable<DocumentStats> {
+    if (!this.isBrowser)
+      return of({
+        total_documents: 0,
+        signed_documents: 0,
+        unsigned_documents: 0,
+        total_storage_bytes: 0,
+      })
+    return this.http.get<DocumentStats>(`${this.baseUrl}/stats/`)
   }
 
   getDocuments(): Observable<Document[]> {
