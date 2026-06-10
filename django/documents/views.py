@@ -1,3 +1,4 @@
+from django.db.models import Count, Q, Sum
 from django.http import FileResponse
 from rest_framework import status
 from rest_framework.exceptions import NotFound, PermissionDenied
@@ -19,13 +20,11 @@ from .serializers import (
 def _get_visible_queryset(user):
     return Document.objects.filter(owner=user)
 
-
 def _assert_can_edit(user, document: Document) -> None:
     if document.owner != user:
         raise PermissionDenied("You do not have permission to edit this document.")
     if document.signing_status == document.SigningStatus.SIGNED:
         raise PermissionDenied("Cannot edit a cryptographically sealed document.")
-
 
 def _assert_can_delete(user, document: Document) -> None:
     if document.owner != user:
@@ -33,11 +32,9 @@ def _assert_can_delete(user, document: Document) -> None:
     if document.signing_status == document.SigningStatus.SIGNED:
         raise PermissionDenied("Cannot delete a cryptographically sealed document.")
 
-
 def _assert_can_download(user, document: Document) -> None:
     if document.owner != user:
         raise PermissionDenied("You do not have permission to download this document.")
-
 
 def _get_document_or_404(pk) -> Document:
     try:
@@ -131,3 +128,18 @@ class DocumentDownloadView(APIView):
         )
         response["Content-Length"] = document.file_size
         return response
+
+
+class DocumentStatsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        qs = _get_visible_queryset(request.user)
+        stats = qs.aggregate(
+            total_documents=Count("id"),
+            signed_documents=Count("id", filter=Q(signing_status=Document.SigningStatus.SIGNED)),
+            unsigned_documents=Count("id", filter=Q(signing_status=Document.SigningStatus.UNSIGNED)),
+            total_storage_bytes=Sum("file_size"),
+        )
+        stats["total_storage_bytes"] = stats["total_storage_bytes"] or 0
+        return Response(stats)

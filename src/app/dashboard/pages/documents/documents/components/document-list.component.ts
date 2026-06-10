@@ -7,7 +7,7 @@ import {
   computed,
 } from "@angular/core"
 import { forkJoin } from "rxjs"
-import { DocumentService, Document } from "@services/document.service"
+import { DocumentService, Document, DocumentStats } from "@services/document.service"
 import { SignatureService, VerificationResponse } from "@services/signature.service"
 import { IconComponent } from "@shared/icons/icons.component"
 import { SvgEmptyStateComponent } from "@shared/icons/svg-emptystate-icon.component"
@@ -35,6 +35,7 @@ const PAGE_SIZE = 10
   templateUrl: "./document-list.component.html",
 })
 export class ListDocumentComponent {
+  documentStats = signal<DocumentStats | null>(null)
   allDocuments = signal<Document[]>([])
   isLoading = signal(true)
   showVerificationModal = signal(false)
@@ -70,8 +71,6 @@ export class ListDocumentComponent {
 
     if (filter !== "all") {
       list = list.filter((d) => {
-        if (filter === "pending")
-          return d.processing_status !== "ready" && d.processing_status !== "error"
         if (filter === "signed" || filter === "unsigned") return d.signing_status == filter
         return d.processing_status == filter
       })
@@ -134,6 +133,10 @@ export class ListDocumentComponent {
         this.isLoading.set(false)
         this.cdr.detectChanges()
       },
+    })
+    this.documentService.getDocumentStats().subscribe({
+      next: (stats) => this.documentStats.set(stats),
+      error: (err) => console.error("Failed to load stats", err),
     })
   }
 
