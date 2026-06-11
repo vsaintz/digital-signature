@@ -52,13 +52,13 @@ class DocumentUploadSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(document.processing_error)
 
         document.save()
-
         return document
 
 
 class DocumentListSerializer(serializers.ModelSerializer):
     file_size_display = serializers.CharField(read_only=True)
     owner_email = serializers.EmailField(source="owner.email", read_only=True)
+    verification_id = serializers.SerializerMethodField()
 
     class Meta:
         model = Document
@@ -73,8 +73,13 @@ class DocumentListSerializer(serializers.ModelSerializer):
             "signing_status",
             "created_at",
             "project",
+            "verification_id"
         ]
         read_only_fields = fields
+
+    def get_verification_id(self, obj):
+        signature = obj.signatures.first()
+        return signature.short_id if signature else None
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -110,7 +115,6 @@ class DocumentSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = fields
 
-
 class DocumentUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
@@ -118,7 +122,6 @@ class DocumentUpdateSerializer(serializers.ModelSerializer):
 
     def validate_name(self, value: str) -> str:
         return value.strip()
-
 
 class DocumentDataSerializer(serializers.Serializer):
     content_hash = serializers.CharField()

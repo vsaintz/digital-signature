@@ -30,6 +30,7 @@ export class DocumentTableComponent {
   @Output() viewDocument = new EventEmitter<string>()
 
   activeMenu = signal<string | null>(null)
+  copiedId = signal<string | null>(null)
 
   constructor(private elRef: ElementRef) {}
 
@@ -103,5 +104,23 @@ export class DocumentTableComponent {
       return "bg-[oklch(0.96_0.04_355)] text-[oklch(0.45_0.16_355)]"
     }
     return "bg-[oklch(0.96_0.02_80)] text-[oklch(0.45_0.06_80)]"
+  }
+
+  copyToClipboard(id: string, e: MouseEvent) {
+    e.stopPropagation()
+
+    navigator.clipboard
+      .writeText(id)
+      .then(() => {
+        this.copiedId.set(id)
+        setTimeout(() => {
+          if (this.copiedId() === id) {
+            this.copiedId.set(null)
+          }
+        }, 3000)
+      })
+      .catch((err) => {
+        console.error("Failed to copy text: ", err)
+      })
   }
 }

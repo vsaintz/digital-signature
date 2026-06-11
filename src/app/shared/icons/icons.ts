@@ -51,6 +51,7 @@ import {
   Star,
   TrendingDown,
   TrendingUp,
+  Copy,
 } from "lucide-angular"
 
 export const APP_ICONS = {
@@ -106,6 +107,7 @@ export const APP_ICONS = {
   Star,
   TrendingDown,
   TrendingUp,
+  Copy,
 } as const
 
 export type AppIconName = keyof typeof APP_ICONS

@@ -14,6 +14,7 @@ export interface DocumentStats {
 
 export interface Document {
   id: string
+  verification_id?: string | null
   name: string
   owner_email: string
   file_size: number
