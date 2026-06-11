@@ -6,6 +6,7 @@
       "@environments/*": ["src/environments/*"],
       "@app/*": ["src/app/*"],
       "@landing/*": ["src/app/landing/*"],
+      "@verification/*": ["src/app/verification/*"],
       "@auth/*": ["src/app/auth/*"],
       "@dashboard/*": ["src/app/dashboard/*"],
       "@guards/*": ["src/app/guards/*"],

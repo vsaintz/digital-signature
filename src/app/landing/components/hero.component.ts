@@ -20,10 +20,10 @@ import { IconComponent } from "@shared/icons/icons.component"
         </div>
         <div class="theme-inverse flex gap-5">
           <a
-            href="/dashboard"
+            href="/verification"
             class="flex items-center gap-1.5 py-3 px-4 theme-inverse bg-(--background) text-(--foreground) text-sm font-medium rounded-lg cursor-pointer"
           >
-            Get Started <app-icon name="ArrowUpRight" [size]="18" />
+            Verify Signature <app-icon name="ArrowUpRight" [size]="18" />
           </a>
           <a
             href="/dashboard"

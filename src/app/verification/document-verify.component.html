@@ -1,0 +1,125 @@
+<div class="w-full h-svh flex items-center justify-center bg-background">
+  <div class="flex flex-col w-full max-w-xl mx-auto">
+    <div class="flex items-center justify-between py-5">
+      <div class="flex items-center gap-2">
+        <svg-sitelogo
+          [size]="20"
+          class="theme-inverse bg-(--background) text-(--foreground) rounded-lg p-1.5"
+        />
+        <h1 class="text-2xl font-bold">Inkless</h1>
+      </div>
+      <span
+        class="bg-background-subtle text-sm text-foreground-muted border border-border rounded-xl px-2 py-1"
+      >
+        v1.0
+      </span>
+    </div>
+
+    <div class="border border-border shadow-lg rounded-xl p-7">
+      <h3 class="text-2xl font-bold mb-2">Document Verification</h3>
+      <span class="text-sm text-foreground-muted mb-5 block">
+        Confirm the authenticity of a signed document by matching its unique signature ID.
+      </span>
+
+      <div class="mt-4 flex flex-col gap-2">
+        <div class="flex items-center gap-2">
+          <label for="signatureInput" class="text-sm font-medium">Signature ID</label>
+          <span class="px-2 py-1 text-xs text-foreground-muted border border-border rounded-md">
+            8-digit hex
+          </span>
+        </div>
+
+        <div class="relative flex items-center my-2">
+          <input
+            id="signatureInput"
+            type="text"
+            [formControl]="signatureId"
+            maxlength="8"
+            class="w-full px-4 py-3 border border-border rounded-md font-mono focus:outline-none pr-14 uppercase"
+            placeholder="0xA1B2C3D4"
+          />
+          <span class="absolute right-4 text-xs text-foreground-muted font-mono">
+            {{ characterCount }}/8
+          </span>
+        </div>
+        <span class="text-xs text-foreground-muted"> Hexadecimal characters only. </span>
+
+        <div class="flex items-center justify-between my-5">
+          <span class="border-t border-divider-border w-full"></span>
+          <span class="border border-border rounded-md p-1 mx-2">
+            <app-icon name="Plus" [size]="12" class="text-foreground-muted" />
+          </span>
+          <span class="border-t border-divider-border w-full"></span>
+        </div>
+
+        <div class="flex gap-2 items-center mb-2">
+          <span class="text-sm font-medium">Document File</span>
+          <span class="text-xs text-foreground-muted border border-border rounded-md px-2 py-1">
+            CSV . XLS . XLSX
+          </span>
+        </div>
+
+        <div
+          (click)="triggerFileInput()"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+          [class.border-accent]="isDragging"
+          [class.bg-background]="isDragging"
+          class="w-full border border-dashed border-border py-10 rounded-xl bg-background-subtle cursor-pointer mb-5 transition-colors"
+        >
+          <input
+            #fileInput
+            type="file"
+            class="hidden"
+            accept=".csv, .xls, .xlsx, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            (change)="onFileSelected($event)"
+          />
+
+          <div class="flex flex-col items-center">
+            <div class="p-2 border border-border rounded-lg bg-background mb-5">
+              @if (!selectedFile) {
+                <app-icon name="Upload" [size]="20" class="text-foreground-muted" />
+              } @else {
+                <app-icon name="FileText" [size]="20" class="text-foreground-muted" />
+              }
+            </div>
+
+            @if (!selectedFile) {
+              <span class="text-sm mb-2">
+                Drag and drop your file here, or click to
+                <span class="text-accent underline">browse</span>
+              </span>
+              <span class="text-xs text-foreground-muted">
+                Supported formats: CSV, XLS, XLSX &mdash; up to 10MB
+              </span>
+            } @else {
+              <span class="text-sm mb-2 font-medium text-foreground">{{ selectedFile.name }}</span>
+              <span class="text-xs text-accent underline mt-1">Click to change file</span>
+            }
+          </div>
+        </div>
+
+        <div class="w-full">
+          <button
+            (click)="verifyDocument()"
+            [disabled]="!selectedFile || characterCount !== 8"
+            class="w-full flex items-center justify-center theme-inverse bg-(--background) text-(--foreground) py-3 rounded-md transition-opacity cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            <app-icon name="Barcode" [size]="22" class="text-(--foreground)" />
+            <span class="ml-2">Verify Signature</span>
+          </button>
+        </div>
+
+        <div class="w-full flex items-center gap-2 mt-5">
+          <span class="text-xs text-foreground-muted border border-foreground-muted">
+            <app-icon name="Plus" [size]="12" [stroke]="3" />
+          </span>
+          <span class="text-xs text-foreground-muted">
+            All verification is performed client-side. No document data is transmitted.
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
