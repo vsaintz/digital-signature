@@ -1,3 +1,4 @@
+import secrets
 import uuid
 
 from django.conf import settings
@@ -7,8 +8,20 @@ from django.utils.translation import gettext_lazy as _
 from documents.models import Document
 
 
+def generate_short_id():
+    return secrets.token_hex(4)
+
 class DocumentSignature(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    short_id = models.CharField(
+        max_length=8,
+        default=generate_short_id,
+        unique=True,
+        editable=False,
+        db_index=True,
+        help_text=_("A unique 8-character hex ID for public verification.")
+    )
 
     document = models.ForeignKey(
         "documents.Document",
@@ -17,7 +30,7 @@ class DocumentSignature(models.Model):
     )
     signer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,  # Preserve the signature audit trail even if user is deleted
+        on_delete=models.SET_NULL,
         null=True,
         related_name="signatures"
     )
