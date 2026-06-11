@@ -5,6 +5,7 @@ import { guestGuard } from "@guards/guest.guard"
 
 import { SigninComponent } from "@auth/signin/signin.component"
 import { SignupComponent } from "@auth/signup/signup.component"
+import { DocumentVerifyComponent } from "@verification/document-verify.component"
 import { LandingComponent } from "@landing/landing.component"
 import { DashboardComponent } from "@dashboard/dashboard.component"
 
@@ -21,6 +22,10 @@ export const routes: Routes = [
     path: "",
     redirectTo: "/landing",
     pathMatch: "full",
+  },
+  {
+    path: "verification",
+    component: DocumentVerifyComponent,
   },
   {
     path: "auth",
