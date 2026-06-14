@@ -1,3 +1,6 @@
+import hashlib
+import json
+
 from django.shortcuts import get_object_or_404
 from documents.models import Document
 from documents.normalizer import normalize
@@ -68,7 +71,8 @@ def public_verify_document_view(request):
 
     try:
         normalized_doc = normalize(file, signature.document.file_type)
-        computed_hash = normalized_doc.get_canonical_hash()
+        data_string = json.dumps(normalized_doc.to_dict(), sort_keys=True)
+        computed_hash = hashlib.sha256(data_string.encode('utf-8')).hexdigest()
 
         if computed_hash == signature.document_hash:
             return Response({
