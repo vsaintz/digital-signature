@@ -70,10 +70,8 @@
          {{ mobileOpen() ? 'translate-x-0' : '-translate-x-full lg:translate-x-0' }}"
 >
   <div class="flex items-center gap-3 p-2 m-3 rounded-xl shrink-0">
-    <div
-      class="w-10 h-10 rounded-lg bg-white border border-border flex items-center justify-center shrink-0"
-    >
-      <span class="text-[13px] font-semibold text-black tracking-tight select-none">Dc</span>
+    <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0">
+      <svg-sitelogo [size]="25" />
     </div>
     <div class="flex flex-col min-w-0">
       <span class="text-sm font-medium text-foreground-muted tracking-tight truncate"
@@ -90,48 +88,53 @@
     </button>
   </div>
 
-  <div class="px-4 pt-4 pb-2 shrink-0">
-    <button
-      (click)="showCreateModal.set(true)"
-      class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-accent hover:bg-[#C36E51] text-white text-[13px] font-medium rounded-lg cursor-pointer transition-all active:scale-[0.98]"
-    >
-      <app-icon name="Plus" [size]="15" />
-      Create New
-    </button>
-  </div>
-
   <nav class="flex-1 overflow-y-auto custom-scrollbar px-3 py-3 flex flex-col gap-1">
-    @for (group of navGroups; track group.section) {
-      <button
-        (click)="toggleGroup(group)"
-        class="flex items-center justify-between w-full px-2 py-1.5 mt-2 first:mt-0 cursor-pointer rounded-md"
-      >
-        <span class="text-[10.5px] font-medium uppercase tracking-[0.09em] text-foreground">
-          {{ group.section }}
-        </span>
-        <app-icon
-          name="ChevronDown"
-          [size]="12"
-          class="text-foreground-muted transition-transform duration-200
-                 {{ group.isExpanded ? 'rotate-0' : '-rotate-90' }}"
-        />
-      </button>
-
-      @if (group.isExpanded) {
-        <div class="flex flex-col gap-0.5 mb-1">
-          @for (link of group.links; track link.title) {
-            <a
-              [routerLink]="link.path"
-              routerLinkActive="bg-hover-background"
-              [routerLinkActiveOptions]="{ exact: true }"
-              (click)="closeMobile()"
-              class="flex items-center gap-3 px-3 py-2 text-[13px] font-medium text-foreground rounded-lg transition-all hover:bg-background-subtle"
-            >
-              <app-icon [name]="link.icon" [size]="18" />
-              {{ link.title }}
-            </a>
-          }
+    @if (user$ | async; as user) {
+      @if (!user.is_staff) {
+        <div class="px-1 pt-1 pb-3 shrink-0">
+          <button
+            (click)="showCreateModal.set(true)"
+            class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-accent hover:bg-accent-bg-hover text-white text-[13px] font-medium rounded-lg cursor-pointer transition-all active:scale-[0.98]"
+          >
+            <app-icon name="Plus" [size]="15" [stroke]="3" />
+            Create New
+          </button>
         </div>
+      }
+      @for (group of navGroups; track group.section) {
+        @if (user.is_staff ? group.isAdmin : !group.isAdmin) {
+          <button
+            (click)="toggleGroup(group)"
+            class="flex items-center justify-between w-full px-2 py-1.5 mt-2 first:mt-5 cursor-pointer rounded-md"
+          >
+            <span class="text-[10.5px] font-medium uppercase tracking-[0.09em] text-foreground">
+              {{ group.section }}
+            </span>
+            <app-icon
+              name="ChevronDown"
+              [size]="12"
+              class="text-foreground-muted transition-transform duration-200
+                     {{ group.isExpanded ? 'rotate-0' : '-rotate-90' }}"
+            />
+          </button>
+
+          @if (group.isExpanded) {
+            <div class="flex flex-col gap-0.5 mb-1">
+              @for (link of group.links; track link.title) {
+                <a
+                  [routerLink]="link.path"
+                  routerLinkActive="bg-hover-background text-foreground"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  (click)="closeMobile()"
+                  class="flex items-center gap-3 px-3 py-2 text-[13px] font-medium text-foreground-muted rounded-lg transition-all hover:bg-background-subtle hover:text-foreground"
+                >
+                  <app-icon [name]="link.icon" [size]="18" />
+                  {{ link.title }}
+                </a>
+              }
+            </div>
+          }
+        }
       }
     }
   </nav>
@@ -156,7 +159,6 @@
             {{ user.email }}
           </span>
         </div>
-
         <app-icon
           name="EllipsisVertical"
           [size]="15"
@@ -185,7 +187,7 @@
             </div>
           </div>
 
-          <div class="py-1">
+          <div>
             <button
               (click)="navigateTo('configuration/settings')"
               class="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-foreground-muted hover:bg-hover-background hover:text-foreground transition-colors cursor-pointer"

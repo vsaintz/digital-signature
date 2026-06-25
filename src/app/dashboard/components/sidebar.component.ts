@@ -6,6 +6,8 @@ import { AuthService } from "@services/auth.service"
 import { AppIconName } from "@shared/icons/icons"
 import { IconComponent } from "@shared/icons/icons.component"
 
+import { SvgSitelogoComponent } from "@shared/icons/svg-sitelogo.component"
+
 interface NavItem {
   title: string
   path: string
@@ -16,12 +18,13 @@ interface NavGroup {
   section: string
   links: NavItem[]
   isExpanded: boolean
+  isAdmin?: boolean
 }
 
 @Component({
   selector: "dash-sidebar",
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, IconComponent, AsyncPipe],
+  imports: [RouterLink, RouterLinkActive, IconComponent, AsyncPipe, SvgSitelogoComponent],
   templateUrl: "./sidebar.component.html",
 })
 export class SidebarComponent {
@@ -45,7 +48,7 @@ export class SidebarComponent {
       section: "Documents",
       isExpanded: true,
       links: [
-        { title: "My Documents", path: "documents", icon: "FileSpreadsheet" },
+        { title: "My Documents", path: "documents", icon: "FileText" },
         { title: "Signatures", path: "documents/signatures", icon: "KeyRound" },
       ],
     },
@@ -65,6 +68,18 @@ export class SidebarComponent {
         { title: "Doc Locking", path: "configuration/documentlocking", icon: "Lock" },
         { title: "Billing", path: "configuration/billing", icon: "BadgeIndianRupee" },
         { title: "Settings", path: "configuration/settings", icon: "Settings" },
+      ],
+    },
+
+    {
+      section: "Administration",
+      isExpanded: true,
+      isAdmin: true,
+      links: [
+        { title: "System Overview", path: "admin/overview", icon: "LayoutGrid" },
+        { title: "Manage Users", path: "admin/users", icon: "Users" },
+        { title: "Manage Documents", path: "admin/documents", icon: "FileText" },
+        { title: "Security & Audit Logs", path: "admin/audit", icon: "ShieldCheck" },
       ],
     },
   ]
@@ -110,6 +125,6 @@ export class SidebarComponent {
   getInitials(firstName: string, lastName: string): string {
     const first = firstName?.charAt(0) ?? ""
     const last = lastName?.charAt(0) ?? ""
-    return (first + last).toUpperCase() || "U"
+    return (first + last).toUpperCase() || "US"
   }
 }

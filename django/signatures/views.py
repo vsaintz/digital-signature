@@ -10,7 +10,7 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from .models import DocumentSignature
+from .models import DocumentSignature, PublicVerificationLog
 from .services import SignatureService
 
 
@@ -51,22 +51,26 @@ def verify_document_view(request, document_id):
     })
 
 
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    return x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 @parser_classes([MultiPartParser, FormParser])
 def public_verify_document_view(request):
     short_id = request.data.get('short_id')
     file = request.FILES.get('file')
+    ip = get_client_ip(request)
+    ua = request.META.get('HTTP_USER_AGENT', '')[:250]
 
     if not short_id or not file:
-        return Response(
-            {"error": "Both 'short_id' and 'file' are required."},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        return Response({"error": "Both 'short_id' and 'file' are required."}, status=status.HTTP_400_BAD_REQUEST)
 
     signature = DocumentSignature.objects.filter(short_id=short_id).first()
 
     if not signature:
+        PublicVerificationLog.objects.create(short_id_used=short_id, status="not_found", ip_address=ip, user_agent=ua)
         return Response({"status": "not_found", "error": "Invalid signature ID."}, status=status.HTTP_404_NOT_FOUND)
 
     try:
@@ -75,13 +79,22 @@ def public_verify_document_view(request):
         computed_hash = hashlib.sha256(data_string.encode('utf-8')).hexdigest()
 
         if computed_hash == signature.document_hash:
+            # SUCCESS LOG
+            PublicVerificationLog.objects.create(
+                short_id_used=short_id, status="verified", signature=signature, ip_address=ip, user_agent=ua
+            )
             return Response({
                 "status": "verified",
                 "signed_by": signature.signer.email if signature.signer else "Unknown",
                 "signed_at": signature.signed_at
             }, status=status.HTTP_200_OK)
         else:
+            # TAMPERED LOG
+            PublicVerificationLog.objects.create(
+                short_id_used=short_id, status="tampered", signature=signature, ip_address=ip, user_agent=ua
+            )
             return Response({"status": "tampered"}, status=status.HTTP_200_OK)
 
     except Exception as e:
+        PublicVerificationLog.objects.create(short_id_used=short_id, status="error", signature=signature, ip_address=ip, user_agent=ua)
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

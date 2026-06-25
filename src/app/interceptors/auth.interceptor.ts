@@ -7,9 +7,8 @@ import {
 import { inject, PLATFORM_ID } from "@angular/core"
 import { isPlatformBrowser } from "@angular/common"
 import { Router } from "@angular/router"
-import { catchError, switchMap, throwError, BehaviorSubject, filter, take } from "rxjs"
+import { catchError, switchMap, throwError, BehaviorSubject, filter, take, finalize } from "rxjs"
 import { AuthService } from "@services/auth.service"
-
 let isRefreshing = false
 const refreshTokenSubject = new BehaviorSubject<string | null>(null)
 
@@ -54,16 +53,17 @@ function handle401(
     refreshTokenSubject.next(null)
 
     return authService.refreshToken().pipe(
-      switchMap((newToken: string) => {
-        isRefreshing = false
-        refreshTokenSubject.next(newToken)
-        return next(addToken(req, newToken))
-      }),
       catchError((err) => {
-        isRefreshing = false
         authService.clearSession()
         router.navigate(["/auth/signin"])
         return throwError(() => err)
+      }),
+      switchMap((newToken: string) => {
+        refreshTokenSubject.next(newToken)
+        return next(addToken(req, newToken))
+      }),
+      finalize(() => {
+        isRefreshing = false
       }),
     )
   } else {

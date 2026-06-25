@@ -11,4 +11,7 @@
   "reportUnusedImport": "none",
   "reportGeneralTypeIssues": "none",
   "reportArgumentType": "none",
+  "reportOptionalIterable": "none",
+  "reportOptionalSubscript": "none",
+  "reportAttributeAccessIssue": "none",
 }
