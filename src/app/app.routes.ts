@@ -1,7 +1,11 @@
-import { Routes } from "@angular/router"
+import { inject } from "@angular/core"
+import { Router, Routes } from "@angular/router"
 
 import { authGuard } from "@guards/auth.guard"
 import { guestGuard } from "@guards/guest.guard"
+import { adminGuard } from "@guards/admin.guard"
+
+import { AuthService } from "@services/auth.service"
 
 import { SigninComponent } from "@auth/signin/signin.component"
 import { SignupComponent } from "@auth/signup/signup.component"
@@ -16,6 +20,11 @@ import { SignaturesPage } from "@dashboard/pages/documents/signatures/signatures
 import { SharedPage } from "@dashboard/pages/workspace/shared.page"
 import { TeamPage } from "@dashboard/pages/workspace/team.page"
 import { SettingsPage } from "@dashboard/pages/configuration/settings.page"
+
+import { AdminOverviewPage } from "@app/dashboard/pages/admin/overview/admin-overview.page"
+import { AdminDocumentsPage } from "@app/dashboard/pages/admin/documents/admin-documents.page"
+import { AdminUsersPage } from "@app/dashboard/pages/admin/users/admin-users.page"
+import { AdminAuditPage } from "@app/dashboard/pages/admin/audit/admin-audit.page"
 
 export const routes: Routes = [
   {
@@ -46,8 +55,30 @@ export const routes: Routes = [
     children: [
       {
         path: "",
-        redirectTo: "overview",
         pathMatch: "full",
+        children: [],
+        canActivate: [
+          () => {
+            const authService = inject(AuthService)
+            const router = inject(Router)
+
+            if (authService.currentUser?.is_staff) {
+              return router.createUrlTree(["/dashboard/admin/overview"])
+            }
+            return router.createUrlTree(["/dashboard/overview"])
+          },
+        ],
+      },
+      {
+        path: "admin",
+        canActivate: [adminGuard],
+        children: [
+          { path: "", redirectTo: "overview", pathMatch: "full" },
+          { path: "overview", component: AdminOverviewPage },
+          { path: "documents", component: AdminDocumentsPage },
+          { path: "users", component: AdminUsersPage },
+          { path: "audit", component: AdminAuditPage },
+        ],
       },
       {
         path: "overview",

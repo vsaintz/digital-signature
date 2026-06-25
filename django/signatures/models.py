@@ -89,3 +89,34 @@ class DocumentSignature(models.Model):
 
     def delete(self, *args, **kwargs):
         raise ValidationError(_("Signatures form a permanent audit trail and cannot be deleted."))
+
+
+class PublicVerificationLog(models.Model):
+    STATUS_CHOICES = (
+        ("verified", "Verified"),
+        ("tampered", "Tampered"),
+        ("not_found", "Not Found"),
+        ("error", "Error"),
+    )
+
+    short_id_used = models.CharField(max_length=20, help_text="The ID the user attempted to look up.")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+
+    signature = models.ForeignKey(
+        'DocumentSignature',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="verification_logs"
+    )
+
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-timestamp"]
+        verbose_name = "public verification log"
+
+    def __str__(self):
+        return f"Verification {self.status} for ID {self.short_id_used}"

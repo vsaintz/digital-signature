@@ -12,7 +12,7 @@
   --accent: oklch(0.6815 0.1182 40.06);
   --accent-bg-hover: oklch(0.6274 0.1161 39.48);
   --hover-background: oklch(0.975 0.004 90);
-  --border: oklch(0.92 0.005 95);
+  --border: oklch(0.95 0.0035 95);
   --divider-border: oklch(0.965 0.003 95);
 
   --status: oklch(0.7227 0.192 149.58);
