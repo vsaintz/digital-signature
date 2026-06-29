@@ -86,6 +86,10 @@ class DocumentSerializer(serializers.ModelSerializer):
     file_size_display = serializers.CharField(read_only=True)
     owner_email = serializers.EmailField(source="owner.email", read_only=True)
     owner_name = serializers.CharField(source="owner.full_name", read_only=True)
+    processing_error = serializers.SerializerMethodField()
+
+    def get_processing_error(self, obj):
+        return obj.processing_error or None
 
     class Meta:
         model = Document

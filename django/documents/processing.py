@@ -13,7 +13,7 @@ ALLOWED_MIME_TYPES: dict[str, str] = {
     "text/csv": Document.FileType.CSV,
     "application/csv": Document.FileType.CSV,
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": Document.FileType.XLSX,
-    "application/vnd.ms-excel": Document.FileType.XLSX,
+    "application/vnd.ms-excel": Document.FileType.XLS,
 }
 
 MAX_UPLOAD_BYTES_DEFAULT = 10 * 1024 * 1024
@@ -38,7 +38,7 @@ def detect_file_type(document: Document, file) -> None:
     mime = supplied if supplied in ALLOWED_MIME_TYPES else (guessed or supplied)
 
     if mime not in ALLOWED_MIME_TYPES:
-        raise ValueError("Unsupported file type. Accepted formats: CSV, XLSX.")
+        raise ValueError("Unsupported file type. Accepted formats: CSV, XLSX, XLS.")
 
     document.file_type = ALLOWED_MIME_TYPES[mime]
 

@@ -136,6 +136,14 @@
     (close)="closeVerificationModal()"
   />
 
+  <document-view-modal
+    [isOpen]="showViewModal()"
+    [isLoading]="viewModalLoading()"
+    [documentName]="viewDocumentName()"
+    [data]="viewDocumentData()"
+    (close)="closeViewModal()"
+  />
+
   <delete-confirm-dialog
     [deleteCount]="pendingDeleteCount()"
     [documentName]="pendingDeleteName()"

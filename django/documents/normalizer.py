@@ -33,6 +33,8 @@ def normalize(file, file_type: str) -> NormalizedDocument:
             df = pd.read_csv(file)
         elif file_type == 'xlsx':
             df = pd.read_excel(file, engine='openpyxl')
+        elif file_type == 'xls':
+            df = pd.read_excel(file, engine='xlrd')
         else:
             raise ValueError(f"Unsupported file type: {file_type}")
     except Exception as e:
@@ -41,6 +43,7 @@ def normalize(file, file_type: str) -> NormalizedDocument:
 
     df.columns = df.columns.astype(str).str.strip().str.lower().str.replace(r'\s+', ' ', regex=True)
 
+    df = df.astype(object)
     df = df.where(pd.notnull(df), None)
 
     for col in df.select_dtypes(include=['datetime64', 'datetimetz']).columns:

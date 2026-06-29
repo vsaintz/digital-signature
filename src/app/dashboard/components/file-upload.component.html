@@ -44,13 +44,9 @@
     />
 
     <div class="flex flex-col items-center gap-1">
-      <div
-        class="mb-4 p-4 bg-background rounded-full text-foreground-muted"
-        [class.group-hover:text-accent]="!selectedFile()"
-        [class.group-hover:bg-hover-background]="!selectedFile()"
-      >
+      <div class="mb-4 p-4 bg-background rounded-full text-foreground-muted bg-hover-background">
         @if (selectedFile()) {
-          <app-icon name="FileSpreadsheet" [size]="30" class="text-accent" />
+          <app-icon name="FileSpreadsheet" [size]="30" />
         } @else {
           <app-icon name="CloudUpload" [size]="30" />
         }
@@ -101,10 +97,10 @@
             class="theme-inverse inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg bg-(--background) text-(--foreground) border border-(--broder) hover:bg-(--hover-background) cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             @if (isUploading()) {
-              <app-icon name="Loader" [size]="16" class="animate-spin" />
+              <app-icon name="Loader" [size]="15" class="animate-spin" />
               Uploading
             } @else {
-              <app-icon name="Upload" [size]="16" />
+              <app-icon name="Upload" [size]="15" />
               Upload File
             }
           </button>

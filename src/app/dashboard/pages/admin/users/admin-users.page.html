@@ -51,6 +51,9 @@
             <th class="w-[10%] px-5 py-3 text-[11px] font-medium uppercase tracking-[0.08em]">
               Status
             </th>
+            <th class="w-[10%] px-5 py-3 text-[11px] font-medium uppercase tracking-[0.08em]">
+              Docs
+            </th>
             <th class="w-[15%] px-5 py-3 text-[11px] font-medium uppercase tracking-[0.08em]">
               Joined
             </th>
@@ -75,6 +78,7 @@
             <td class="px-5 py-4"><div class="h-3 w-3/4 rounded bg-gray-200"></div></td>
             <td class="px-5 py-4"><div class="h-5 w-16 rounded bg-gray-200"></div></td>
             <td class="px-5 py-4"><div class="h-5 w-16 rounded bg-gray-200"></div></td>
+            <td class="px-5 py-4"><div class="h-5 w-8 rounded bg-gray-200"></div></td>
             <td class="px-5 py-4"><div class="h-3 w-3/4 rounded bg-gray-200"></div></td>
             <td class="px-5 py-4"><div class="h-3 w-3/4 rounded bg-gray-200"></div></td>
             <td class="px-5 py-4"><div class="h-6 w-6 rounded bg-gray-200 ml-auto"></div></td>
@@ -202,6 +206,9 @@
             <th class="w-[10%] px-5 py-3 text-[11px] font-medium uppercase tracking-[0.08em]">
               Status
             </th>
+            <th class="w-[10%] px-5 py-3 text-[11px] font-medium uppercase tracking-[0.08em]">
+              Docs
+            </th>
             <th class="w-[15%] px-5 py-3 text-[11px] font-medium uppercase tracking-[0.08em]">
               Joined
             </th>
@@ -251,6 +258,9 @@
               } @else {
               <span class="text-[13px] font-medium"> Active </span>
               }
+            </td>
+            <td class="px-5 py-3.5 text-[13px] font-medium text-foreground">
+              {{ user.document_count || 0 }}
             </td>
             <td
               class="px-5 py-3.5 text-[13px] text-foreground-muted font-medium whitespace-nowrap truncate"
