@@ -93,4 +93,26 @@ export class DocumentService {
       error: (err) => console.error("Download failed", err),
     })
   }
+  getDocumentData(id: string): Observable<any> {
+    if (!this.isBrowser) return of(null)
+    return this.http.get(`${this.baseUrl}/${id}/data/`)
+  }
+
+  exportAllDocuments(): void {
+    if (!this.isBrowser) return
+
+    this.http.get(`${this.baseUrl}/export/`, { responseType: "blob" }).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = "my_documents.zip"
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
+      },
+      error: (err) => console.error("Export failed", err),
+    })
+  }
 }

@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import status
@@ -39,7 +39,9 @@ class AdminUserListView(ListAPIView):
     pagination_class = UserStatsPagination
 
     def get_queryset(self):
-        queryset = CustomUser.objects.all().order_by('-date_joined')
+        queryset = CustomUser.objects.annotate(
+          document_count=Count('documents')
+        ).order_by('-date_joined')
         search_query = self.request.query_params.get('search', '').strip()
         if search_query:
             parts = search_query.split()

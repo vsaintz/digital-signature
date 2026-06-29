@@ -58,6 +58,7 @@ import {
   Copy,
   Link,
   ReceiptText,
+  Clock,
 } from "lucide-angular"
 
 export const APP_ICONS = {
@@ -120,6 +121,7 @@ export const APP_ICONS = {
   Copy,
   Link,
   ReceiptText,
+  Clock,
 } as const
 
 export type AppIconName = keyof typeof APP_ICONS

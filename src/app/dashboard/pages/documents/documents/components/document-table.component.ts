@@ -123,4 +123,11 @@ export class DocumentTableComponent {
         console.error("Failed to copy text: ", err)
       })
   }
+
+  getDocType(doc: Document): string {
+    if (doc.file_type) {
+      return doc.file_type.split(".").pop() ?? "Unknown"
+    }
+    return "Unknown"
+  }
 }

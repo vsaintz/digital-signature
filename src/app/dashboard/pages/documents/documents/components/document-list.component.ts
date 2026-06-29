@@ -16,6 +16,7 @@ import { DocumentToolbarComponent, FilterStatus, SortField } from "./document-to
 import { StatsCardComponent } from "./stats-card.component"
 import { DocumentTableComponent } from "./document-table.component"
 import { VerificationModalComponent } from "./verification-modal.component"
+import { DocumentViewModalComponent } from "./document-view-modal.component"
 import { DeleteConfirmDialogComponent } from "./delete-confirm-dialog.component"
 
 const PAGE_SIZE = 10
@@ -29,6 +30,7 @@ const PAGE_SIZE = 10
     DocumentTableComponent,
     IconComponent,
     SvgEmptyStateComponent,
+    DocumentViewModalComponent,
     VerificationModalComponent,
     DeleteConfirmDialogComponent,
   ],
@@ -41,6 +43,11 @@ export class ListDocumentComponent {
   showVerificationModal = signal(false)
   isVerifying = signal(false)
   verificationResult = signal<VerificationResponse | null>(null)
+
+  showViewModal = signal(false)
+  viewModalLoading = signal(false)
+  viewDocumentData = signal<any>(null)
+  viewDocumentName = signal("")
 
   pendingDeleteCount = signal(0)
   pendingDeleteId = signal<string | null>(null)
@@ -153,7 +160,7 @@ export class ListDocumentComponent {
   }
 
   onDownloadSelected() {
-    this.selectedIds.forEach((id) => this.documentService.downloadDocument(id))
+    this.selectedIds.forEach((id) => this.onDownloadDocument(id))
     this.clearSelection()
   }
 
@@ -206,7 +213,28 @@ export class ListDocumentComponent {
   }
 
   onViewDocument(id: string) {
-    this.onDownloadDocument(id)
+    const doc = this.allDocuments().find((d) => d.id === id)
+    if (!doc) return
+
+    this.viewDocumentName.set(doc.name)
+    this.viewDocumentData.set(null)
+    this.viewModalLoading.set(true)
+    this.showViewModal.set(true)
+
+    this.documentService.getDocumentData(id).subscribe({
+      next: (res) => {
+        this.viewDocumentData.set(res)
+        this.viewModalLoading.set(false)
+      },
+      error: (err) => {
+        console.error("Failed to fetch document data", err)
+        this.viewModalLoading.set(false)
+      },
+    })
+  }
+
+  closeViewModal() {
+    this.showViewModal.set(false)
   }
 
   onSignDocument(id: string): void {

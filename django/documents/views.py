@@ -1,5 +1,8 @@
+import io
+import zipfile
+
 from django.db.models import Count, Q, Sum
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse
 from rest_framework import status
 from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -143,3 +146,23 @@ class DocumentStatsView(APIView):
         )
         stats["total_storage_bytes"] = stats["total_storage_bytes"] or 0
         return Response(stats)
+
+class DocumentExportView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        documents = _get_visible_queryset(request.user)
+
+        if not documents.exists():
+            return Response({"detail": "No documents to export."}, status=status.HTTP_400_BAD_REQUEST)
+
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            for doc in documents:
+                if doc.file:
+                    zip_file.writestr(doc.original_filename, doc.file.read())
+
+        buffer.seek(0)
+        response = HttpResponse(buffer.getvalue(), content_type='application/zip')
+        response['Content-Disposition'] = 'attachment; filename="my_documents.zip"'
+        return response

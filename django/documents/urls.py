@@ -11,6 +11,7 @@ from .views import (
     DocumentDataView,
     DocumentDetailView,
     DocumentDownloadView,
+    DocumentExportView,
     DocumentListCreateView,
     DocumentStatsView,
 )
@@ -18,6 +19,7 @@ from .views import (
 urlpatterns = [
     path("", DocumentListCreateView.as_view(), name="document-list-create"),
     path("stats/", DocumentStatsView.as_view(), name="document-stats"),
+    path("export/", DocumentExportView.as_view(), name="document-export"),
     path("<uuid:pk>/", DocumentDetailView.as_view(), name="document-detail"),
     path("<uuid:pk>/data/", DocumentDataView.as_view(), name="document-data"),
     path("<uuid:pk>/download/", DocumentDownloadView.as_view(), name="document-download"),

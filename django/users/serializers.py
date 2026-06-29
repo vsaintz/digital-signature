@@ -27,6 +27,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(read_only=True)
+    document_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = User
@@ -42,6 +43,7 @@ class UserSerializer(serializers.ModelSerializer):
             "is_active",
             "date_joined",
             "last_login",
+            "document_count",
         ]
 
 

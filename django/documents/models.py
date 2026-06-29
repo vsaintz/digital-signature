@@ -15,6 +15,7 @@ class Document(models.Model):
     class FileType(models.TextChoices):
         CSV = "csv", _("CSV")
         XLSX = "xlsx", _("Excel (.xlsx)")
+        XLS = "xls", _("Excel (.xls)")
 
     class ProcessingStatus(models.TextChoices):
         PENDING = "pending", _("Pending")
@@ -25,7 +26,6 @@ class Document(models.Model):
     class SigningStatus(models.TextChoices):
         UNSIGNED = "unsigned", _("Unsigned")
         SIGNED = "signed", _("Signed")
-        CHANGES_REQUESTED = "changes_requested", _("Changes Requested")
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
@@ -48,7 +48,7 @@ class Document(models.Model):
         default=ProcessingStatus.PENDING,
         db_index=True,
     )
-    processing_error = models.TextField(blank=True)
+    processing_error = models.TextField(blank=True, null=True, default=None)
     signing_status = models.CharField(
         max_length=20,
         choices=SigningStatus.choices,

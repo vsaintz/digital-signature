@@ -49,10 +49,11 @@
       </div>
       <div class="flex items-center gap-2.5 shrink-0">
         <button
+          (click)="onExport()"
           class="flex items-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 text-[13px] font-medium border border-border rounded-lg bg-background text-foreground-muted hover:bg-background-subtle hover:text-foreground transition-colors cursor-pointer"
         >
-          Export
-          <app-icon name="ChevronDown" [size]="15" />
+          <app-icon name="Download" [size]="15" class="shrink-0" />
+          <span class="leading-none">Export</span>
         </button>
         <button
           (click)="showUploadModal.set(true)"
